@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { UniversidadSelect } from './components/UniversidadSelect';
+import { UniversitySelect } from './components/UniversitySelect';
 function App() {
-  const [universidadId, setUniversidadId] = useState<number | ''>('');
+const [universityId, setUniversityId] = useState<number | ''>('');
 
   return (
     <main className="mx-auto mt-10 max-w-md space-y-4 p-4">
       <h1 className="text-2xl font-bold">Prueba EP 001</h1>
-      <UniversidadSelect value={universidadId} onChange={setUniversidadId} />
-      <p className="text-gray-600">ID seleccionado: {universidadId || 'ninguno'}</p>
+      <UniversitySelect value={universityId} onChange={setUniversityId} />
+      <p className="text-gray-600">ID seleccionado: {universityId || 'ninguno'}</p>
     </main>
   );
 }

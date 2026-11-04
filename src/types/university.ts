@@ -1,4 +1,4 @@
-export interface Universidad {
+export interface University {
   id: number;
   nombre: string;
   direccion: string;
