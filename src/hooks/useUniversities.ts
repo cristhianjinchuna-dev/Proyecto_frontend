@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { getUniversities } from '../api/universities';
-import { getErrorMessage } from '../api/client';
+import { getErrorMessage } from '../api/errors';  
 import type { University } from '../types/university';
 
 export function useUniversities() {
