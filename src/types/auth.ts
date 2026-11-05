@@ -28,3 +28,20 @@ export interface AuthUser {
   id: number;
   role: Role;
 }
+
+// EP 004 - body
+export interface LoginRequest {
+  correo: string;
+  contrasena: string;
+}
+
+// EP 006 - body
+export interface ForgotPasswordRequest {
+  correo: string;
+}
+
+// EP 007 - body
+export interface ResetPasswordRequest {
+  token: string;
+  nuevaContrasena: string;
+}

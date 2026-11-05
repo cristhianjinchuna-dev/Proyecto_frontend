@@ -34,3 +34,17 @@ export function getFieldErrors(error: unknown): Record<string, string> {
   const body = error.response?.data as ApiErrorBody | undefined;
   return body?.errores ?? {};
 }
+
+
+// Maps backend field names (nombre, correo...) to form field names (name, email...)
+export function mapFieldErrors<T>(
+  error: unknown,
+  fieldMap: Record<string, keyof T>,
+): Partial<Record<keyof T, string>> {
+  const result: Partial<Record<keyof T, string>> = {};
+  for (const [serverField, message] of Object.entries(getFieldErrors(error))) {
+    const field = fieldMap[serverField];
+    if (field) result[field] = message;
+  }
+  return result;
+}
