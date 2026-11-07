@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ImageOff, MapPin, Ruler, Sparkles } from 'lucide-react';
+import { ImageOff, MapPin, Navigation, Ruler, Sparkles } from 'lucide-react';
 import { getRoomImages } from '../../api/rooms';
 import { useFetch } from '../../hooks/useFetch';
 import { buildRoomPath } from '../../routes/paths';
@@ -8,7 +8,7 @@ import type { Room } from '../../types/room';
 import { formatArea, formatPrice } from '../../utils/format';
 
 export function RoomCard({ room }: { room: Room }) {
-  // EP 010: the list (EP 008) has no images, so each card loads its own cover
+  // EP 010: the list (EP 008/012) has no images, so each card loads its own cover
   const { data: images, loading } = useFetch(
     (signal) => getRoomImages(room.id, signal),
     [room.id],
@@ -42,6 +42,13 @@ export function RoomCard({ room }: { room: Room }) {
           <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1 text-xs font-semibold text-amber-950 shadow">
             <Sparkles className="h-3.5 w-3.5" aria-hidden />
             Destacada
+          </span>
+        )}
+
+        {room.distanciaKm != null && (
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-gray-800 shadow">
+            <Navigation className="h-3.5 w-3.5 text-blue-600" aria-hidden />
+            {room.distanciaKm.toFixed(1)} km
           </span>
         )}
       </div>

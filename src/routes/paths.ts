@@ -7,17 +7,27 @@ export const PATHS = {
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password', // must match the link sent by the backend email
   roomDetail: '/rooms/:id',
+  nearbyRooms: '/rooms/nearby',
+  landlordDashboard: '/landlord',
+  landlordProfile: '/landlord/profile',
+  createRoom: '/landlord/rooms/new',
+  roomImages: '/landlord/rooms/:id/images',
 } as const;
 
 export function buildRoomPath(id: number): string {
   return `/rooms/${id}`;
 }
 
-// Where each role goes after logging in (updated when we build each dashboard)
+export function buildRoomImagesPath(id: number): string {
+  return `/landlord/rooms/${id}/images`;
+}
+
+// Where each role goes after logging in
 export function getDefaultPathForRole(role: Role): string {
   switch (role) {
-    case 'ADMIN':
     case 'ARRENDADOR':
+      return PATHS.landlordDashboard;
+    case 'ADMIN':
     case 'ESTUDIANTE':
     default:
       return PATHS.home;

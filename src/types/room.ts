@@ -1,3 +1,5 @@
+import type { PageParams } from './page';
+
 // EP 008 / EP 012 - list item (HabitacionResponseDTO)
 export interface Room {
   id: number;
@@ -24,4 +26,22 @@ export interface RoomDetail {
   precio: number;
   area: number | null;
   imagenes: RoomImage[];
+}
+
+// EP 012 - query params
+export interface NearbyRoomsParams extends PageParams {
+  universidadId: number;
+  radioKm: number;
+}
+
+// EP 016 / EP 019 - body (HabitacionRequestDTO)
+export interface RoomRequest {
+  direccion: string;
+  precio: number;
+  area: number;
+}
+
+// EP 017 - body (ImagenRequestDTO)
+export interface CreateImageRequest {
+  url: string;
 }

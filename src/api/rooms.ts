@@ -1,7 +1,7 @@
 import { api } from './client';
 import { toPage } from './pagination';
 import type { Page, PageParams } from '../types/page';
-import type { Room, RoomDetail, RoomImage } from '../types/room';
+import type { NearbyRoomsParams, Room, RoomDetail, RoomImage, RoomRequest } from '../types/room';
 
 // EP 008 - GET /habitaciones (public, paginated, featured first)
 export async function getRooms(params: PageParams, signal?: AbortSignal): Promise<Page<Room>> {
@@ -18,5 +18,20 @@ export async function getRoomById(id: number, signal?: AbortSignal): Promise<Roo
 // EP 010 - GET /habitaciones/{id}/imagenes (public, non-paginated)
 export async function getRoomImages(roomId: number, signal?: AbortSignal): Promise<RoomImage[]> {
   const { data } = await api.get<RoomImage[]>(`/habitaciones/${roomId}/imagenes`, { signal });
+  return data;
+}
+
+// EP 012 - GET /habitaciones/cercanas (public, paginated, featured first then closest)
+export async function getNearbyRooms(
+  params: NearbyRoomsParams,
+  signal?: AbortSignal,
+): Promise<Page<Room>> {
+  const { data } = await api.get('/habitaciones/cercanas', { params, signal });
+  return toPage<Room>(data);
+}
+
+// EP 016 - POST /habitaciones (verified ARRENDADOR)
+export async function createRoom(body: RoomRequest): Promise<Room> {
+  const { data } = await api.post<Room>('/habitaciones', body);
   return data;
 }
