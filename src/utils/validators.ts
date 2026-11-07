@@ -1,6 +1,7 @@
-// Same rules as the backend DTOs (EstudianteRequestDTO / ArrendadorRequestDTO)
+// Same rules as the backend DTOs
 const NAME_PATTERN = /^[\p{L} .'-]+$/u;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const URL_PATTERN = /^https?:\/\/\S+$/;
 
 export function validateName(name: string): string | undefined {
   const value = name.trim();
@@ -31,5 +32,44 @@ export function validatePassword(password: string): string | undefined {
   if (!/[a-z]/.test(password)) return 'Incluye al menos una minúscula';
   if (!/\d/.test(password)) return 'Incluye al menos un número';
   if (!/[^A-Za-z0-9]/.test(password)) return 'Incluye al menos un símbolo';
+  return undefined;
+}
+
+// Required text with a max length (e.g. room address: 255)
+export function validateRequiredText(
+  text: string,
+  emptyMessage: string,
+  maxLength: number,
+): string | undefined {
+  const value = text.trim();
+  if (!value) return emptyMessage;
+  if (value.length > maxLength) return `Máximo ${maxLength} caracteres`;
+  return undefined;
+}
+
+// Image / DNI URLs (ImagenRequestDTO: http(s)://, max 500)
+export function validateUrl(
+  url: string,
+  { required = true, maxLength = 500 }: { required?: boolean; maxLength?: number } = {},
+): string | undefined {
+  const value = url.trim();
+  if (!value) return required ? 'La URL es obligatoria' : undefined;
+  if (value.length > maxLength) return `Máximo ${maxLength} caracteres`;
+  if (!URL_PATTERN.test(value)) return 'Debe empezar con http:// o https://';
+  return undefined;
+}
+
+// Price (> 0) and area (integer > 0)
+export function validatePositiveNumber(
+  raw: string,
+  emptyMessage: string,
+  { integer = false }: { integer?: boolean } = {},
+): string | undefined {
+  const value = raw.trim();
+  if (!value) return emptyMessage;
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 'Debe ser un número';
+  if (number <= 0) return 'Debe ser mayor a cero';
+  if (integer && !Number.isInteger(number)) return 'Debe ser un número entero';
   return undefined;
 }

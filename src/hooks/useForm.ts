@@ -38,5 +38,13 @@ export function useForm<T extends object>(
       serverErrors[field] ?? (touched[field] ? validationErrors[field] : undefined),
     [serverErrors, touched, validationErrors],
   );
-  return { values, setValue, getError, validateAll, setServerErrors, isValid };
+
+  // Back to the initial state (e.g. after adding an image)
+  const reset = useCallback(() => {
+    setValues(initialValues);
+    setTouched({});
+    setServerErrors({});
+  }, [initialValues]);
+
+  return { values, setValue, getError, validateAll, setServerErrors, isValid, reset };
 }
