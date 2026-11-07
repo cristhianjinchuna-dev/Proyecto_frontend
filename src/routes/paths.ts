@@ -10,6 +10,8 @@ export const PATHS = {
   nearbyRooms: '/rooms/nearby',
   myReservations: '/reservations',
   reservationDetail: '/reservations/:id',
+  myReviews: '/reviews',
+  studentProfile: '/profile',
   landlordDashboard: '/landlord',
   landlordProfile: '/landlord/profile',
   reservationRequests: '/landlord/reservations',

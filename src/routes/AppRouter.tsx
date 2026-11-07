@@ -12,6 +12,8 @@ const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
 const MyReservationsPage = lazy(() => import('../pages/MyReservationsPage'));
+const MyReviewsPage = lazy(() => import('../pages/student/MyReviewsPage'));
+const StudentProfilePage = lazy(() => import('../pages/student/StudentProfilePage'));
 const ReservationDetailPage = lazy(() => import('../pages/ReservationDetailPage'));
 const LandlordDashboardPage = lazy(() => import('../pages/landlord/LandlordDashboardPage'));
 const LandlordProfilePage = lazy(() => import('../pages/landlord/LandlordProfilePage'));
@@ -37,6 +39,8 @@ export function AppRouter() {
         {/* Student only */}
         <Route element={<PrivateRoute allowedRoles={['ESTUDIANTE']} />}>
           <Route path={PATHS.myReservations} element={<MyReservationsPage />} />
+          <Route path={PATHS.myReviews} element={<MyReviewsPage />} />
+          <Route path={PATHS.studentProfile} element={<StudentProfilePage />} />
         </Route>
 
         {/* Student owner or landlord owner (the backend checks who exactly) */}

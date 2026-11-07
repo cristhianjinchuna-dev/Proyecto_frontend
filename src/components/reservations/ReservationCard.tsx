@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDays, MapPin, UserRound } from 'lucide-react';
-import { getRoomById } from '../../api/rooms';
 import { getStudentProfile } from '../../api/students';
 import { useFetch } from '../../hooks/useFetch';
-import { buildReservationPath, buildRoomPath } from '../../routes/paths';
+import { RoomAddressLink } from '../rooms/RoomAddressLink';
+import { buildReservationPath } from '../../routes/paths';
 import type { Reservation } from '../../types/reservation';
 import { countNights, formatDate } from '../../utils/dates';
 import { ReservationStatusBadge } from './ReservationStatusBadge';
@@ -13,17 +13,6 @@ interface ReservationCardProps {
   reservation: Reservation;
   showStudent?: boolean; // landlord view: who made the request (EP 025)
   actions?: ReactNode;
-}
-
-// The reservation only has habitacionId, so we load the address (EP 009)
-function RoomAddress({ roomId }: { roomId: number }) {
-  const { data: room, loading } = useFetch((signal) => getRoomById(roomId, signal), [roomId]);
-  if (loading) return <span className="inline-block h-4 w-48 animate-pulse rounded bg-gray-200" />;
-  return (
-    <Link to={buildRoomPath(roomId)} className="truncate hover:text-blue-600 hover:underline">
-      {room?.direccion ?? `Habitación #${roomId}`}
-    </Link>
-  );
 }
 
 function StudentName({ studentId }: { studentId: number }) {
@@ -50,7 +39,7 @@ export function ReservationCard({ reservation, showStudent = false, actions }: R
 
         <p className="flex items-center gap-1.5 text-sm text-gray-700">
           <MapPin className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
-          <RoomAddress roomId={reservation.habitacionId} />
+          <RoomAddressLink roomId={reservation.habitacionId} />
         </p>
 
         <p className="flex items-center gap-1.5 text-sm text-gray-600">

@@ -31,9 +31,17 @@ export function Navbar() {
           </NavLink>
 
           {user?.role === 'ESTUDIANTE' && (
-            <NavLink to={PATHS.myReservations} className={navLinkClass}>
-              Mis reservas
-            </NavLink>
+            <>
+              <NavLink to={PATHS.myReservations} className={navLinkClass}>
+                Mis reservas
+              </NavLink>
+              <NavLink to={PATHS.myReviews} className={navLinkClass}>
+                Mis reseñas
+              </NavLink>
+              <NavLink to={PATHS.studentProfile} className={navLinkClass}>
+                Mi perfil
+              </NavLink>
+            </>
           )}
 
           {user?.role === 'ARRENDADOR' && (
