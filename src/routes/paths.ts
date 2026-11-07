@@ -8,8 +8,13 @@ export const PATHS = {
   resetPassword: '/reset-password', // must match the link sent by the backend email
   roomDetail: '/rooms/:id',
   nearbyRooms: '/rooms/nearby',
+  myReservations: '/reservations',
+  reservationDetail: '/reservations/:id',
+  myReviews: '/reviews',
+  studentProfile: '/profile',
   landlordDashboard: '/landlord',
   landlordProfile: '/landlord/profile',
+  reservationRequests: '/landlord/reservations',
   createRoom: '/landlord/rooms/new',
   editRoom: '/landlord/rooms/:id/edit',
   roomImages: '/landlord/rooms/:id/images',
@@ -17,6 +22,10 @@ export const PATHS = {
 
 export function buildRoomPath(id: number): string {
   return `/rooms/${id}`;
+}
+
+export function buildReservationPath(id: number): string {
+  return `/reservations/${id}`;
 }
 
 export function buildEditRoomPath(id: number): string {

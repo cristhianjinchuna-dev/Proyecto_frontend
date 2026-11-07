@@ -11,8 +11,13 @@ const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
+const MyReservationsPage = lazy(() => import('../pages/MyReservationsPage'));
+const MyReviewsPage = lazy(() => import('../pages/student/MyReviewsPage'));
+const StudentProfilePage = lazy(() => import('../pages/student/StudentProfilePage'));
+const ReservationDetailPage = lazy(() => import('../pages/ReservationDetailPage'));
 const LandlordDashboardPage = lazy(() => import('../pages/landlord/LandlordDashboardPage'));
 const LandlordProfilePage = lazy(() => import('../pages/landlord/LandlordProfilePage'));
+const ReservationRequestsPage = lazy(() => import('../pages/landlord/ReservationRequestsPage'));
 const CreateRoomPage = lazy(() => import('../pages/landlord/CreateRoomPage'));
 const EditRoomPage = lazy(() => import('../pages/landlord/EditRoomPage'));
 const RoomImagesPage = lazy(() => import('../pages/landlord/RoomImagesPage'));
@@ -31,10 +36,23 @@ export function AppRouter() {
         <Route path={PATHS.forgotPassword} element={<ForgotPasswordPage />} />
         <Route path={PATHS.resetPassword} element={<ResetPasswordPage />} />
 
+        {/* Student only */}
+        <Route element={<PrivateRoute allowedRoles={['ESTUDIANTE']} />}>
+          <Route path={PATHS.myReservations} element={<MyReservationsPage />} />
+          <Route path={PATHS.myReviews} element={<MyReviewsPage />} />
+          <Route path={PATHS.studentProfile} element={<StudentProfilePage />} />
+        </Route>
+
+        {/* Student owner or landlord owner (the backend checks who exactly) */}
+        <Route element={<PrivateRoute allowedRoles={['ESTUDIANTE', 'ARRENDADOR']} />}>
+          <Route path={PATHS.reservationDetail} element={<ReservationDetailPage />} />
+        </Route>
+
         {/* Landlord only */}
         <Route element={<PrivateRoute allowedRoles={['ARRENDADOR']} />}>
           <Route path={PATHS.landlordDashboard} element={<LandlordDashboardPage />} />
           <Route path={PATHS.landlordProfile} element={<LandlordProfilePage />} />
+          <Route path={PATHS.reservationRequests} element={<ReservationRequestsPage />} />
           <Route path={PATHS.createRoom} element={<CreateRoomPage />} />
           <Route path={PATHS.editRoom} element={<EditRoomPage />} />
           <Route path={PATHS.roomImages} element={<RoomImagesPage />} />

@@ -1,22 +1,31 @@
 import { useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Button } from './Button';
+
+type ConfirmVariant = 'danger' | 'primary';
 
 interface ConfirmDialogProps {
   open: boolean;
   title: string;
   message: string;
   confirmLabel?: string;
+  variant?: ConfirmVariant;
   loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
+
+const ICONS: Record<ConfirmVariant, { className: string; Icon: typeof AlertTriangle }> = {
+  danger: { className: 'bg-red-100 text-red-600', Icon: AlertTriangle },
+  primary: { className: 'bg-blue-100 text-blue-600', Icon: CheckCircle2 },
+};
 
 export function ConfirmDialog({
   open,
   title,
   message,
   confirmLabel = 'Eliminar',
+  variant = 'danger',
   loading = false,
   onConfirm,
   onCancel,
@@ -33,6 +42,8 @@ export function ConfirmDialog({
 
   if (!open) return null;
 
+  const { className, Icon } = ICONS[variant];
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
@@ -47,8 +58,8 @@ export function ConfirmDialog({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
-            <AlertTriangle className="h-5 w-5" aria-hidden />
+          <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${className}`}>
+            <Icon className="h-5 w-5" aria-hidden />
           </span>
           <div>
             <h2 id="confirm-title" className="text-lg font-semibold text-gray-900">
@@ -61,9 +72,9 @@ export function ConfirmDialog({
         </div>
         <div className="mt-6 flex gap-3">
           <Button variant="secondary" onClick={onCancel} disabled={loading}>
-            Cancelar
+            Volver
           </Button>
-          <Button variant="danger" onClick={onConfirm} loading={loading}>
+          <Button variant={variant} onClick={onConfirm} loading={loading}>
             {confirmLabel}
           </Button>
         </div>
