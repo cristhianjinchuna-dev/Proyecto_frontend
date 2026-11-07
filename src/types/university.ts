@@ -5,3 +5,9 @@ export interface University {
   latitud: number;
   longitud: number;
 }
+
+// EP 038 - body (UniversidadRequestDTO). The backend finds the coordinates.
+export interface CreateUniversityRequest {
+  nombre: string;
+  direccion: string;
+}

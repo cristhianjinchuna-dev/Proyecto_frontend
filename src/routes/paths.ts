@@ -18,6 +18,8 @@ export const PATHS = {
   createRoom: '/landlord/rooms/new',
   editRoom: '/landlord/rooms/:id/edit',
   roomImages: '/landlord/rooms/:id/images',
+  adPayments: '/landlord/payments',
+  adminPanel: '/admin',
 } as const;
 
 export function buildRoomPath(id: number): string {
@@ -42,6 +44,7 @@ export function getDefaultPathForRole(role: Role): string {
     case 'ARRENDADOR':
       return PATHS.landlordDashboard;
     case 'ADMIN':
+      return PATHS.adminPanel;
     case 'ESTUDIANTE':
     default:
       return PATHS.home;

@@ -1,4 +1,6 @@
 import { api } from './client';
+import { toPage } from './pagination';
+import type { Page, PageParams } from '../types/page';
 import type { Student, StudentProfile, UpdateStudentRequest } from '../types/student';
 
 // EP 025 - GET /estudiantes/{id}/perfil (ARRENDADOR only)
@@ -22,4 +24,10 @@ export async function updateStudent(id: number, body: UpdateStudentRequest): Pro
 // EP 033 - DELETE /estudiantes/{id} (the student himself or ADMIN, 204)
 export async function deleteStudent(id: number): Promise<void> {
   await api.delete(`/estudiantes/${id}`);
+}
+
+// EP 037 - GET /estudiantes (ADMIN only, paginated)
+export async function getStudents(params: PageParams, signal?: AbortSignal): Promise<Page<Student>> {
+  const { data } = await api.get('/estudiantes', { params, signal });
+  return toPage<Student>(data);
 }

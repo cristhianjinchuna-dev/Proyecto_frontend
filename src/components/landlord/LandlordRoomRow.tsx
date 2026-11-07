@@ -10,9 +10,10 @@ const ACTION_BASE =
 interface LandlordRoomRowProps {
   room: Room;
   onDelete: (room: Room) => void;
+  onAdvertise: (room: Room) => void;
 }
 
-export function LandlordRoomRow({ room, onDelete }: LandlordRoomRowProps) {
+export function LandlordRoomRow({ room, onDelete, onAdvertise }: LandlordRoomRowProps) {
   return (
     <li className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0">
@@ -48,6 +49,14 @@ export function LandlordRoomRow({ room, onDelete }: LandlordRoomRowProps) {
         >
           <ImagePlus className="h-4 w-4" aria-hidden /> Fotos
         </Link>
+        <button
+          type="button"
+          onClick={() => onAdvertise(room)}
+          aria-label={`Destacar habitación ${room.direccion}`}
+          className={`${ACTION_BASE} border border-amber-300 text-amber-700 hover:bg-amber-50`}
+        >
+          <Sparkles className="h-4 w-4" aria-hidden /> Destacar
+        </button>
         <button
           type="button"
           onClick={() => onDelete(room)}
