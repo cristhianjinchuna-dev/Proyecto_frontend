@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BedDouble, Home, MessageSquare, PlusCircle, Star, UserPen } from 'lucide-react';
+import { BedDouble, History, Home, MessageSquare, PlusCircle, Star, UserPen } from 'lucide-react';
 import { getErrorStatus, getErrorMessage } from '../../api/errors';
 import { getLandlord, getLandlordRooms } from '../../api/landlords';
 import { deleteRoom } from '../../api/rooms';
+import { AdvertiseDialog } from '../../components/landlord/AdvertiseDialog';
 import { LandlordRoomRow } from '../../components/landlord/LandlordRoomRow';
 import { Alert } from '../../components/ui/Alert';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
@@ -17,7 +18,9 @@ import { useFetch } from '../../hooks/useFetch';
 import { usePagination } from '../../hooks/usePagination';
 import { useToast } from '../../hooks/useToast';
 import { PATHS } from '../../routes/paths';
+import type { AdPayment } from '../../types/payment';
 import type { Room } from '../../types/room';
+import { formatDate } from '../../utils/dates';
 
 export default function LandlordDashboardPage() {
   const { user } = useAuth();
@@ -35,6 +38,16 @@ export default function LandlordDashboardPage() {
   const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
   const [deleting, setDeleting] = useState(false);
   const closeDialog = useCallback(() => setRoomToDelete(null), []);
+
+  // EP 034 - the room the landlord wants to highlight (null = dialog closed)
+  const [roomToAdvertise, setRoomToAdvertise] = useState<Room | null>(null);
+  const closeAdvertiseDialog = useCallback(() => setRoomToAdvertise(null), []);
+
+  function handleAdPaid(payment: AdPayment) {
+    setRoomToAdvertise(null);
+    showToast(`Habitación destacada hasta el ${formatDate(payment.fechaFin)}`);
+    rooms.reload(); // the room now shows the "Destacada" badge
+  }
 
   // EP 020 - DELETE /habitaciones/{id}
   async function handleConfirmDelete() {
@@ -81,7 +94,13 @@ export default function LandlordDashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">Hola, {landlord.nombre}</h1>
           <p className="mt-1 text-gray-600">{landlord.correo}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to={PATHS.adPayments}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+          >
+            <History className="h-4 w-4" aria-hidden /> Mis pagos
+          </Link>
           <Link
             to={PATHS.landlordProfile}
             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
@@ -164,7 +183,12 @@ export default function LandlordDashboardPage() {
           <>
             <ul className="space-y-3">
               {rooms.data.content.map((room) => (
-                <LandlordRoomRow key={room.id} room={room} onDelete={setRoomToDelete} />
+                <LandlordRoomRow
+                  key={room.id}
+                  room={room}
+                  onDelete={setRoomToDelete}
+                  onAdvertise={setRoomToAdvertise}
+                />
               ))}
             </ul>
             <Pagination
@@ -178,6 +202,8 @@ export default function LandlordDashboardPage() {
           </>
         )}
       </section>
+
+      <AdvertiseDialog room={roomToAdvertise} onClose={closeAdvertiseDialog} onPaid={handleAdPaid} />
 
       <ConfirmDialog
         open={roomToDelete !== null}

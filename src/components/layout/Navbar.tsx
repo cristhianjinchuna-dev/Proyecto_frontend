@@ -52,7 +52,16 @@ export function Navbar() {
               <NavLink to={PATHS.reservationRequests} className={navLinkClass}>
                 Solicitudes
               </NavLink>
+              <NavLink to={PATHS.adPayments} className={navLinkClass}>
+                Pagos
+              </NavLink>
             </>
+          )}
+
+          {user?.role === 'ADMIN' && (
+            <NavLink to={PATHS.adminPanel} className={navLinkClass}>
+              Panel de administrador
+            </NavLink>
           )}
 
           {isAuthenticated && user ? (

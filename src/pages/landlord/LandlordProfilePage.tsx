@@ -1,11 +1,12 @@
-import { useState, type FormEvent } from 'react';
+import { useCallback, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BadgeCheck, Clock } from 'lucide-react';
-import { getLandlord, updateLandlord } from '../../api/landlords';
-import { getErrorMessage, mapFieldErrors } from '../../api/errors';
+import { AlertTriangle, BadgeCheck, Clock, Trash2 } from 'lucide-react';
+import { deleteLandlord, getLandlord, updateLandlord } from '../../api/landlords';
+import { getErrorMessage, getErrorStatus, mapFieldErrors } from '../../api/errors';
 import { AuthCard } from '../../components/auth/AuthCard';
 import { Alert } from '../../components/ui/Alert';
 import { Button } from '../../components/ui/Button';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { PageLoader } from '../../components/ui/PageLoader';
 import { TextField } from '../../components/ui/TextField';
@@ -54,6 +55,7 @@ export default function LandlordProfilePage() {
 
 function ProfileForm({ landlord }: { landlord: Landlord }) {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const { showToast } = useToast();
   const { values, setValue, getError, validateAll, setServerErrors } = useForm(
     { name: landlord.nombre, dniPhotoUrl: '' },
@@ -61,6 +63,10 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
   );
   const [submitting, setSubmitting] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const closeDialog = useCallback(() => setConfirmDelete(false), []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -80,6 +86,26 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
       setGeneralError(getErrorMessage(err));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  // EP 040 - if it works, the account no longer exists: log out
+  async function handleDeleteAccount() {
+    setDeleting(true);
+    try {
+      await deleteLandlord(landlord.id);
+      signOut();
+      showToast('Tu cuenta fue eliminada', 'info');
+      navigate(PATHS.home, { replace: true });
+    } catch (err) {
+      setConfirmDelete(false);
+      setDeleting(false);
+      showToast(
+        getErrorStatus(err) === 409
+          ? 'No puedes eliminar tu cuenta porque tus habitaciones tienen reservas o calificaciones.'
+          : getErrorMessage(err),
+        'error',
+      );
     }
   }
 
@@ -127,6 +153,30 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
           </Button>
         </div>
       </form>
+
+      {/* Danger zone */}
+      <div className="space-y-3 rounded-xl border border-red-200 p-4">
+        <h2 className="flex items-center gap-2 font-semibold text-red-700">
+          <AlertTriangle className="h-4 w-4" aria-hidden /> Zona de peligro
+        </h2>
+        <p className="text-sm text-gray-600">
+          Eliminar tu cuenta también borra todas tus habitaciones. No se puede si tienen reservas o
+          calificaciones.
+        </p>
+        <Button type="button" variant="danger" onClick={() => setConfirmDelete(true)}>
+          <Trash2 className="h-4 w-4" aria-hidden /> Eliminar mi cuenta
+        </Button>
+      </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="¿Eliminar tu cuenta?"
+        message="Se borrarán tu cuenta y todas tus habitaciones. Esta acción no se puede deshacer."
+        confirmLabel="Sí, eliminar"
+        loading={deleting}
+        onConfirm={handleDeleteAccount}
+        onCancel={closeDialog}
+      />
     </AuthCard>
   );
 }

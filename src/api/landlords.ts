@@ -25,3 +25,20 @@ export async function getLandlordRooms(
   const { data } = await api.get(`/arrendadores/${id}/habitaciones`, { params, signal });
   return toPage<Room>(data);
 }
+
+// NEW - GET /arrendadores (ADMIN only, paginated). Added to the backend so the admin can find landlords.
+export async function getLandlords(params: PageParams, signal?: AbortSignal): Promise<Page<Landlord>> {
+  const { data } = await api.get('/arrendadores', { params, signal });
+  return toPage<Landlord>(data);
+}
+
+// EP 036 - PATCH /arrendadores/{id}/verificar (ADMIN only, no body)
+export async function verifyLandlord(id: number): Promise<Landlord> {
+  const { data } = await api.patch<Landlord>(`/arrendadores/${id}/verificar`);
+  return data;
+}
+
+// EP 040 - DELETE /arrendadores/{id} (the landlord himself or ADMIN, 204)
+export async function deleteLandlord(id: number): Promise<void> {
+  await api.delete(`/arrendadores/${id}`);
+}

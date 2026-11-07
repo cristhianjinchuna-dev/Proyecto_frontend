@@ -21,7 +21,9 @@ const ReservationRequestsPage = lazy(() => import('../pages/landlord/Reservation
 const CreateRoomPage = lazy(() => import('../pages/landlord/CreateRoomPage'));
 const EditRoomPage = lazy(() => import('../pages/landlord/EditRoomPage'));
 const RoomImagesPage = lazy(() => import('../pages/landlord/RoomImagesPage'));
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const AdPaymentsPage = lazy(() => import('../pages/landlord/AdPaymentsPage'));
+const AdminPanelPage = lazy(() => import('../pages/admin/AdminPanelPage'));
+const NotFoundPage =lazy(() => import('../pages/NotFoundPage'));
 
 export function AppRouter() {
   return (
@@ -56,6 +58,12 @@ export function AppRouter() {
           <Route path={PATHS.createRoom} element={<CreateRoomPage />} />
           <Route path={PATHS.editRoom} element={<EditRoomPage />} />
           <Route path={PATHS.roomImages} element={<RoomImagesPage />} />
+          <Route path={PATHS.adPayments} element={<AdPaymentsPage />} />
+        </Route>
+
+        {/* Admin only */}
+        <Route element={<PrivateRoute allowedRoles={['ADMIN']} />}>
+          <Route path={PATHS.adminPanel} element={<AdminPanelPage />} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />
