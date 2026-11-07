@@ -11,11 +11,16 @@ export const PATHS = {
   landlordDashboard: '/landlord',
   landlordProfile: '/landlord/profile',
   createRoom: '/landlord/rooms/new',
+  editRoom: '/landlord/rooms/:id/edit',
   roomImages: '/landlord/rooms/:id/images',
 } as const;
 
 export function buildRoomPath(id: number): string {
   return `/rooms/${id}`;
+}
+
+export function buildEditRoomPath(id: number): string {
+  return `/landlord/rooms/${id}/edit`;
 }
 
 export function buildRoomImagesPath(id: number): string {

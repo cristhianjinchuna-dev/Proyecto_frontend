@@ -35,3 +35,14 @@ export async function createRoom(body: RoomRequest): Promise<Room> {
   const { data } = await api.post<Room>('/habitaciones', body);
   return data;
 }
+
+// EP 019 - PUT /habitaciones/{id} (owner ARRENDADOR, all fields are sent)
+export async function updateRoom(id: number, body: RoomRequest): Promise<Room> {
+  const { data } = await api.put<Room>(`/habitaciones/${id}`, body);
+  return data;
+}
+
+// EP 020 - DELETE /habitaciones/{id} (owner ARRENDADOR, 204 no body)
+export async function deleteRoom(id: number): Promise<void> {
+  await api.delete(`/habitaciones/${id}`);
+}

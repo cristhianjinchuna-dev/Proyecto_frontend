@@ -1,8 +1,12 @@
+import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BedDouble, Home, MessageSquare, PlusCircle, Star, UserPen } from 'lucide-react';
+import { getErrorStatus, getErrorMessage } from '../../api/errors';
 import { getLandlord, getLandlordRooms } from '../../api/landlords';
+import { deleteRoom } from '../../api/rooms';
 import { LandlordRoomRow } from '../../components/landlord/LandlordRoomRow';
 import { Alert } from '../../components/ui/Alert';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { PageLoader } from '../../components/ui/PageLoader';
@@ -11,7 +15,9 @@ import { StatCard } from '../../components/ui/StatCard';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { usePagination } from '../../hooks/usePagination';
+import { useToast } from '../../hooks/useToast';
 import { PATHS } from '../../routes/paths';
+import type { Room } from '../../types/room';
 
 export default function LandlordDashboardPage() {
   const { user } = useAuth();
@@ -25,8 +31,40 @@ export default function LandlordDashboardPage() {
     [landlordId, page, size],
   );
 
-  if (profile.loading) return <PageLoader />;
-  if (profile.error || !profile.data) {
+  const { showToast } = useToast();
+  const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const closeDialog = useCallback(() => setRoomToDelete(null), []);
+
+  // EP 020 - DELETE /habitaciones/{id}
+  async function handleConfirmDelete() {
+    if (!roomToDelete) return;
+    setDeleting(true);
+    try {
+      await deleteRoom(roomToDelete.id);
+      showToast('Habitación eliminada');
+      setRoomToDelete(null);
+
+      // If it was the last room of this page, go back one page; otherwise reload the same page
+      const isLastOnPage = rooms.data?.content.length === 1;
+      if (isLastOnPage && page > 0) setPage(page - 1);
+      else rooms.reload();
+      profile.reload(); // updates the "Habitaciones" counter
+    } catch (err) {
+      showToast(
+        getErrorStatus(err) === 409
+          ? 'No se puede eliminar: la habitación tiene reservas, pagos o calificaciones asociadas.'
+          : getErrorMessage(err),
+        'error',
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  // Full-page loader only the first time (reloads keep the current data on screen)
+  if (!profile.data) {
+    if (profile.loading) return <PageLoader />;
     return (
       <section className="py-12">
         <ErrorState message={profile.error ?? 'No se pudo cargar tu perfil'} onRetry={profile.reload} />
@@ -126,7 +164,7 @@ export default function LandlordDashboardPage() {
           <>
             <ul className="space-y-3">
               {rooms.data.content.map((room) => (
-                <LandlordRoomRow key={room.id} room={room} />
+                <LandlordRoomRow key={room.id} room={room} onDelete={setRoomToDelete} />
               ))}
             </ul>
             <Pagination
@@ -140,6 +178,15 @@ export default function LandlordDashboardPage() {
           </>
         )}
       </section>
+
+      <ConfirmDialog
+        open={roomToDelete !== null}
+        title="¿Eliminar esta habitación?"
+        message={`Se eliminará "${roomToDelete?.direccion ?? ''}" junto con sus fotos. Esta acción no se puede deshacer.`}
+        loading={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={closeDialog}
+      />
     </section>
   );
 }

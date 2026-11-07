@@ -4,6 +4,7 @@ import { MapPinned, SearchX } from 'lucide-react';
 import { getNearbyRooms } from '../api/rooms';
 import { RadiusSlider } from '../components/rooms/RadiusSlider';
 import { RoomGrid } from '../components/rooms/RoomGrid';
+import { UniversityCard } from '../components/UniversityCard';
 import { UniversitySelect } from '../components/UniversitySelect';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
@@ -139,6 +140,9 @@ export default function NearbyRoomsPage() {
         </div>
         <RadiusSlider value={sliderValue} min={RADIUS_MIN} max={RADIUS_MAX} onChange={setRadiusDraft} />
       </div>
+
+      {/* EP 013 - selected university */}
+      {universityId && <UniversityCard universityId={universityId} />}
 
       {renderResults()}
     </section>
