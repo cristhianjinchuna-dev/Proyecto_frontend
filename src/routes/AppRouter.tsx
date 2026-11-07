@@ -4,6 +4,7 @@ import { MainLayout } from '../components/layout/MainLayout';
 import { PATHS } from './paths';
 
 const HomePage = lazy(() => import('../pages/HomePage'));
+const RoomDetailPage = lazy(() => import('../pages/RoomDetailPage'));
 const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/ForgotPasswordPage'));
@@ -15,6 +16,7 @@ export function AppRouter() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route path={PATHS.home} element={<HomePage />} />
+        <Route path={PATHS.roomDetail} element={<RoomDetailPage />} />
         <Route path={PATHS.register} element={<RegisterPage />} />
         <Route path={PATHS.login} element={<LoginPage />} />
         <Route path={PATHS.forgotPassword} element={<ForgotPasswordPage />} />
