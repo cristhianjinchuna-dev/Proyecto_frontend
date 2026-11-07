@@ -30,10 +30,21 @@ export function Navbar() {
             Cerca de mi universidad
           </NavLink>
 
-          {user?.role === 'ARRENDADOR' && (
-            <NavLink to={PATHS.landlordDashboard} end className={navLinkClass}>
-              Mi panel
+          {user?.role === 'ESTUDIANTE' && (
+            <NavLink to={PATHS.myReservations} className={navLinkClass}>
+              Mis reservas
             </NavLink>
+          )}
+
+          {user?.role === 'ARRENDADOR' && (
+            <>
+              <NavLink to={PATHS.landlordDashboard} end className={navLinkClass}>
+                Mi panel
+              </NavLink>
+              <NavLink to={PATHS.reservationRequests} className={navLinkClass}>
+                Solicitudes
+              </NavLink>
+            </>
           )}
 
           {isAuthenticated && user ? (

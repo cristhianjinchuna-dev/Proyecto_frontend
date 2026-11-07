@@ -2,6 +2,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import { Images, MapPin, Ruler, SearchX } from 'lucide-react';
 import { getRoomById } from '../api/rooms';
 import { RoomRatings } from '../components/ratings/RoomRatings';
+import { ReservationForm } from '../components/reservations/ReservationForm';
 import { RoomGallery } from '../components/rooms/RoomGallery';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -87,7 +88,7 @@ export default function RoomDetailPage() {
             </div>
           </dl>
 
-          {/* EP 021 (create reservation) will replace this block */}
+          {/* EP 021 - only students can book */}
           {!isAuthenticated ? (
             <Link
               to={PATHS.login}
@@ -97,13 +98,7 @@ export default function RoomDetailPage() {
               Inicia sesión para reservar
             </Link>
           ) : user?.role === 'ESTUDIANTE' ? (
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white opacity-60"
-            >
-              Reservar
-            </button>
+            <ReservationForm roomId={room.id} />
           ) : (
             <p className="rounded-lg bg-gray-50 px-4 py-3 text-center text-sm text-gray-600">
               Solo los estudiantes pueden reservar habitaciones.
