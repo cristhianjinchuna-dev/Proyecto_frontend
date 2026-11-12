@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MapPinned, SearchX } from 'lucide-react';
 import { getNearbyRooms } from '../api/rooms';
+import { getUniversityById } from '../api/universities';
+import { LocationMap } from '../components/LocationMap';
 import { RadiusSlider } from '../components/rooms/RadiusSlider';
 import { RoomGrid } from '../components/rooms/RoomGrid';
 import { UniversityCard } from '../components/UniversityCard';
@@ -11,12 +13,12 @@ import { ErrorState } from '../components/ui/ErrorState';
 import { Pagination } from '../components/ui/Pagination';
 import { useDebounce } from '../hooks/useDebounce';
 import { useFetch } from '../hooks/useFetch';
-import { usePagination } from '../hooks/usePagination';
+import { PAGE_SIZE_OPTIONS, usePagination } from '../hooks/usePagination';
 import type { Page } from '../types/page';
 import type { Room } from '../types/room';
 
 const RADIUS_MIN = 1;
-const RADIUS_MAX = 50;
+const RADIUS_MAX = 10;
 const DEFAULT_RADIUS = 5;
 
 export default function NearbyRoomsPage() {
@@ -67,6 +69,14 @@ export default function NearbyRoomsPage() {
         : Promise.resolve(null),
     [universityId, radiusKm, page, size],
   );
+  const { data: selectedUniversity } = useFetch(
+    (signal) => universityId ? getUniversityById(universityId, signal) : Promise.resolve(null),
+    [universityId],
+  );
+  const circleCenter = useMemo(
+    () => selectedUniversity ? { lat: selectedUniversity.latitud, lng: selectedUniversity.longitud } : undefined,
+    [selectedUniversity?.latitud, selectedUniversity?.longitud],
+  );
 
   function renderResults() {
     if (!universityId) {
@@ -79,7 +89,7 @@ export default function NearbyRoomsPage() {
       );
     }
     if (error) return <ErrorState message={error} onRetry={reload} />;
-    if (loading) return <RoomGrid rooms={[]} loading skeletonCount={Math.min(size, 8)} />;
+    if (loading && !data) return <RoomGrid rooms={[]} loading skeletonCount={Math.min(size, 8)} />;
 
     if (!data || data.content.length === 0) {
       return (
@@ -104,6 +114,13 @@ export default function NearbyRoomsPage() {
 
     return (
       <>
+        {data.content.length > 0 && <LocationMap
+          title={`Habitaciones dentro de ${radiusKm} km`}
+          rooms={data.content}
+          circleCenter={circleCenter}
+          radiusKm={radiusKm}
+          circleCenterTitle={selectedUniversity?.nombre ?? 'Universidad seleccionada'}
+        />}
         <RoomGrid rooms={data.content} />
         <Pagination
           page={data.page.number}
@@ -114,7 +131,6 @@ export default function NearbyRoomsPage() {
             setPage(newPage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
-          onSizeChange={setSize}
         />
       </>
     );
@@ -127,7 +143,7 @@ export default function NearbyRoomsPage() {
         <p className="mt-1 text-gray-600">Las destacadas aparecen primero y luego las más cercanas.</p>
       </header>
 
-      <div className="grid gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 md:grid-cols-2">
+      <div className="grid gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 sm:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-1">
           <label htmlFor="universityId" className="block text-sm font-medium text-gray-700">
             Universidad
@@ -139,6 +155,18 @@ export default function NearbyRoomsPage() {
           />
         </div>
         <RadiusSlider value={sliderValue} min={RADIUS_MIN} max={RADIUS_MAX} onChange={setRadiusDraft} />
+        <div className="space-y-2">
+          <label htmlFor="nearby-page-size" className="block text-sm font-medium text-gray-700">Habitaciones a mostrar</label>
+          <select
+            id="nearby-page-size"
+            value={size}
+            onChange={(event) => setSize(Number(event.target.value))}
+            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {PAGE_SIZE_OPTIONS.map((option) => <option key={option} value={option}>{option} por página</option>)}
+          </select>
+          <p className="text-xs text-gray-500">Elige cuántas ubicaciones mostrar en el mapa y en los resultados.</p>
+        </div>
       </div>
 
       {/* EP 013 - selected university */}

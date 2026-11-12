@@ -23,6 +23,8 @@ export interface RoomImage {
 export interface RoomDetail {
   id: number;
   direccion: string;
+  latitud: number;
+  longitud: number;
   precio: number;
   area: number | null;
   imagenes: RoomImage[];
@@ -39,6 +41,8 @@ export interface RoomRequest {
   direccion: string;
   precio: number;
   area: number;
+  latitud?: number;
+  longitud?: number;
 }
 
 // EP 017 - body (ImagenRequestDTO)

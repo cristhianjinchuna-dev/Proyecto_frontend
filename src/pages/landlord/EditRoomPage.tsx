@@ -75,6 +75,8 @@ export default function EditRoomPage() {
             address: room.direccion,
             price: String(room.precio),
             area: String(room.area),
+            latitud: room.latitud,
+            longitud: room.longitud,
           }}
           submitLabel="Guardar cambios"
           submittingLabel="Guardando..."
