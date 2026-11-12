@@ -6,14 +6,17 @@ import { TextField } from '../ui/TextField';
 import { useForm, type FormErrors } from '../../hooks/useForm';
 import type { RoomRequest } from '../../types/room';
 import { validatePositiveNumber, validateRequiredText } from '../../utils/validators';
+import { RoomLocationPicker } from './RoomLocationPicker';
 
 export interface RoomFormValues {
   address: string;
   price: string;
   area: string;
+  latitud?: number | null;
+  longitud?: number | null;
 }
 
-export const EMPTY_ROOM_FORM: RoomFormValues = { address: '', price: '', area: '' };
+export const EMPTY_ROOM_FORM: RoomFormValues = { address: '', price: '', area: '', latitud: null, longitud: null };
 
 const SERVER_FIELDS: Record<string, keyof RoomFormValues> = {
   direccion: 'address',
@@ -45,11 +48,20 @@ export function RoomForm({ initialValues, submitLabel, submittingLabel, onSubmit
   );
   const [submitting, setSubmitting] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    initialValues.latitud != null && initialValues.longitud != null
+      ? { lat: initialValues.latitud, lng: initialValues.longitud }
+      : null,
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setGeneralError(null);
     if (!validateAll()) return;
+    if (!location) {
+      setGeneralError('Selecciona una sugerencia de Google Maps o usa tu ubicación actual antes de continuar.');
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -57,6 +69,8 @@ export function RoomForm({ initialValues, submitLabel, submittingLabel, onSubmit
         direccion: values.address.trim(),
         precio: Number(values.price),
         area: Number(values.area),
+        latitud: location.lat,
+        longitud: location.lng,
       });
     } catch (err) {
       const status = getErrorStatus(err);
@@ -81,15 +95,16 @@ export function RoomForm({ initialValues, submitLabel, submittingLabel, onSubmit
       {generalError && <Alert variant="error">{generalError}</Alert>}
 
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
-        <TextField
-          label="Dirección"
-          name="address"
-          placeholder="Av. Universitaria 1020, San Miguel, Lima"
-          hint="Usamos Google Maps para ubicarla y calcular la distancia a las universidades"
-          value={values.address}
-          onChange={(e) => setValue('address', e.target.value)}
-          error={getError('address')}
+        <RoomLocationPicker
+          address={values.address}
+          onAddressChange={(address) => {
+            setValue('address', address);
+          }}
+          coordinates={location}
+          onCoordinatesChange={setLocation}
         />
+        {getError('address') && <p className="text-sm text-red-600">{getError('address')}</p>}
+
         <TextField
           label="Precio mensual (S/)"
           name="price"

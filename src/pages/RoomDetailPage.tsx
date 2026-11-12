@@ -1,7 +1,10 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { Images, MapPin, Ruler, SearchX } from 'lucide-react';
 import { getRoomById } from '../api/rooms';
+import { getUniversities } from '../api/universities';
 import { RoomRatings } from '../components/ratings/RoomRatings';
+import { LocationMap } from '../components/LocationMap';
 import { ReservationForm } from '../components/reservations/ReservationForm';
 import { RoomGallery } from '../components/rooms/RoomGallery';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
@@ -10,6 +13,8 @@ import { ErrorState } from '../components/ui/ErrorState';
 import { PageLoader } from '../components/ui/PageLoader';
 import { useAuth } from '../hooks/useAuth';
 import { useFetch } from '../hooks/useFetch';
+import type { RoomDetail } from '../types/room';
+import type { University } from '../types/university';
 import { PATHS } from '../routes/paths';
 import { formatArea, formatPrice } from '../utils/format';
 
@@ -107,7 +112,76 @@ export default function RoomDetailPage() {
         </aside>
       </div>
 
+      <RoomLocationSection room={room} />
       <RoomRatings roomId={room.id} />
     </section>
+  );
+}
+
+function distanceKm(fromLat: number, fromLng: number, toLat: number, toLng: number) {
+  const radians = (degrees: number) => degrees * (Math.PI / 180);
+  const latitudeDelta = radians(toLat - fromLat);
+  const longitudeDelta = radians(toLng - fromLng);
+  const a = Math.sin(latitudeDelta / 2) ** 2
+    + Math.cos(radians(fromLat)) * Math.cos(radians(toLat)) * Math.sin(longitudeDelta / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function RoomLocationSection({ room }: { room: RoomDetail }) {
+  const { data: universities, loading, error } = useFetch<University[]>(
+    (signal) => getUniversities(signal),
+    [],
+  );
+  const closestUniversities = useMemo(
+    () => (universities ?? [])
+      .map((university) => ({
+        university,
+        distance: distanceKm(room.latitud, room.longitud, university.latitud, university.longitud),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 5),
+    [universities, room.latitud, room.longitud],
+  );
+  const [selectedUniversityId, setSelectedUniversityId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!closestUniversities.some(({ university }) => university.id === selectedUniversityId)) {
+      setSelectedUniversityId(closestUniversities[0]?.university.id ?? null);
+    }
+  }, [closestUniversities, selectedUniversityId]);
+
+  const selectedUniversity = closestUniversities.find(
+    ({ university }) => university.id === selectedUniversityId,
+  )?.university;
+  const coordinates = useMemo(
+    () => ({ lat: room.latitud, lng: room.longitud }),
+    [room.latitud, room.longitud],
+  );
+  const routeDestination = useMemo(
+    () => selectedUniversity
+      ? { lat: selectedUniversity.latitud, lng: selectedUniversity.longitud, title: selectedUniversity.nombre }
+      : undefined,
+    [selectedUniversity],
+  );
+
+  return (
+    <LocationMap
+      title={selectedUniversity ? `Ruta a ${selectedUniversity.nombre}` : 'Ubicaci?n de la habitaci?n'}
+      rooms={[]}
+      address={room.direccion}
+      coordinates={coordinates}
+      routeDestination={routeDestination}
+      routeUniversities={closestUniversities.map(({ university, distance }) => ({
+        id: university.id,
+        name: university.nombre,
+        lat: university.latitud,
+        lng: university.longitud,
+        distanceKm: distance,
+      }))}
+      selectedUniversityId={selectedUniversityId}
+      onSelectUniversity={setSelectedUniversityId}
+      universitiesLoading={loading}
+      universitiesError={Boolean(error)}
+    />
   );
 }
