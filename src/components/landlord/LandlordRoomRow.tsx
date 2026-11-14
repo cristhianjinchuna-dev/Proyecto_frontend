@@ -52,10 +52,11 @@ export function LandlordRoomRow({ room, onDelete, onAdvertise }: LandlordRoomRow
         <button
           type="button"
           onClick={() => onAdvertise(room)}
-          aria-label={`Destacar habitación ${room.direccion}`}
-          className={`${ACTION_BASE} border border-amber-300 text-amber-700 hover:bg-amber-50`}
+          disabled={room.esDestacada}
+          aria-label={`${room.esDestacada ? 'Habitación destacada' : 'Destacar habitación'} ${room.direccion}`}
+          className={`${ACTION_BASE} border border-amber-300 text-amber-700 enabled:hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60`}
         >
-          <Sparkles className="h-4 w-4" aria-hidden /> Destacar
+          <Sparkles className="h-4 w-4" aria-hidden /> {room.esDestacada ? 'Destacada' : 'Destacar'}
         </button>
         <button
           type="button"
