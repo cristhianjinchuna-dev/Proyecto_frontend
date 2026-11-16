@@ -4,6 +4,7 @@ import { Elements, ExpressCheckoutElement, PaymentElement, useElements, useStrip
 import { Sparkles } from 'lucide-react';
 import { getErrorMessage } from '../../api/errors';
 import { confirmAdPayment, createAdPaymentIntent } from '../../api/payments';
+import { useTheme } from '../../hooks/useTheme';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
 import { AD_PLANS, type AdPayment, type CreateAdPaymentIntentResponse } from '../../types/payment';
@@ -32,6 +33,7 @@ interface AdvertiseDialogContentProps {
 }
 
 function AdvertiseDialogContent({ room, onClose, onPaid }: AdvertiseDialogContentProps) {
+  const { theme } = useTheme();
   const [amount, setAmount] = useState(AD_PLANS[0].amount);
   const [intent, setIntent] = useState<CreateAdPaymentIntentResponse | null>(null);
   const [starting, setStarting] = useState(false);
@@ -124,7 +126,13 @@ function AdvertiseDialogContent({ room, onClose, onPaid }: AdvertiseDialogConten
             </div>
 
             {intent && stripePromise ? (
-              <Elements stripe={stripePromise} options={{ clientSecret: intent.clientSecret }}>
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret: intent.clientSecret,
+                  appearance: { theme: theme === 'dark' ? 'night' : 'stripe' }, // card form readable in dark mode
+                }}
+              >
                 <StripePaymentForm
                   paymentIntentId={intent.paymentIntentId}
                   onPaid={onPaid}

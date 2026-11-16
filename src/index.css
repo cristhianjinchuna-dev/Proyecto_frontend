@@ -65,20 +65,40 @@
     :where(.dark) .text-green-800 {
         color: oklch(87.1% 0.15 154.449);
     }
+    /* (text-amber-950 is NOT here: it is the dark text of the solid yellow "Destacada" badge) */
     :where(.dark) .text-amber-700,
-    :where(.dark) .text-amber-800,
-    :where(.dark) .text-amber-950 {
+    :where(.dark) .text-amber-800 {
         color: oklch(87.9% 0.169 91.605);
     }
 
     /* Borders of colored boxes */
     :where(.dark) .border-red-200,
     :where(.dark) .border-blue-200,
+    :where(.dark) .border-green-200,
     :where(.dark) .ring-blue-100,
-    :where(.dark) .ring-red-200 {
+    :where(.dark) .ring-red-200,
+    :where(.dark) .ring-green-200 {
         border-color: oklch(100% 0 0 / 0.12);
         --tw-ring-color: oklch(100% 0 0 / 0.12);
   }
+}
+
+/* Hover / focus with light tints: without this the row turns pale and its (already lightened) text disappears.
+   ".dark" (not :where) so it beats Tailwind's hover: utilities */
+.dark .hover\:bg-blue-50:hover,
+.dark .focus\:bg-blue-50:focus {
+  background-color: oklch(62.3% 0.214 259.815 / 0.2);
+}
+.dark .hover\:bg-red-100:hover {
+  background-color: oklch(63.7% 0.237 25.331 / 0.2);
+}
+.dark .enabled\:hover\:bg-amber-50:enabled:hover {
+  background-color: oklch(76.9% 0.188 70.08 / 0.2);
+}
+
+/* Links that turn blue on hover: same lighter blue as .text-blue-600 */
+.dark .hover\:text-blue-600:hover {
+  color: oklch(80.9% 0.105 251.813);
 }
 
 /* Smooth change when switching theme */
