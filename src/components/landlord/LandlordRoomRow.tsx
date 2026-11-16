@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Eye, ImagePlus, Pencil, Sparkles, Trash2 } from 'lucide-react';
+import { Eye, EyeOff, ImagePlus, Pencil, Sparkles, Trash2 } from 'lucide-react';
 import { buildEditRoomPath, buildRoomImagesPath, buildRoomPath } from '../../routes/paths';
 import type { Room } from '../../types/room';
 import { formatArea, formatPrice } from '../../utils/format';
@@ -25,6 +25,14 @@ export function LandlordRoomRow({ room, onDelete, onAdvertise }: LandlordRoomRow
           {room.esDestacada && (
             <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
               <Sparkles className="h-3 w-3" aria-hidden /> Destacada
+            </span>
+          )}
+          {room.oculta && (
+            <span
+              title="Un administrador la ocultó: no aparece en las búsquedas. Revisa tu correo."
+              className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700"
+            >
+              <EyeOff className="h-3 w-3" aria-hidden /> Oculta por moderación
             </span>
           )}
         </p>

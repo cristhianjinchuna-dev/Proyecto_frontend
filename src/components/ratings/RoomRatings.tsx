@@ -1,5 +1,7 @@
 import { MessageSquare } from 'lucide-react';
 import { getRoomRatings } from '../../api/ratings';
+import { useAuth } from '../../hooks/useAuth';
+import { RatingDeleteButton } from '../admin/RatingDeleteButton';
 import { useFetch } from '../../hooks/useFetch';
 import { usePagination } from '../../hooks/usePagination';
 import { EmptyState } from '../ui/EmptyState';
@@ -17,6 +19,8 @@ export function RoomRatings({ roomId }: { roomId: number }) {
     (signal) => getRoomRatings(roomId, { page, size }, signal),
     [roomId, page, size],
   );
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <section aria-labelledby="ratings-title" className="space-y-4">
@@ -45,7 +49,11 @@ export function RoomRatings({ roomId }: { roomId: number }) {
         <>
           <ul className="space-y-3">
             {data.content.map((rating) => (
-              <RatingCard key={rating.id} rating={rating} />
+              <RatingCard
+                key={rating.id}
+                rating={rating}
+                actions={isAdmin ? <RatingDeleteButton rating={rating} onDeleted={reload} /> : undefined}
+              />
             ))}
           </ul>
           <Pagination

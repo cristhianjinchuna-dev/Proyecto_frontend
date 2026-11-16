@@ -36,6 +36,13 @@ export async function getStudentRatings(
 }
 
 // EP 030 - DELETE /calificaciones/{id} (author or ADMIN, 204)
-export async function deleteRating(id: number): Promise<void> {
-  await api.delete(`/calificaciones/${id}`);
+// The author deletes his own; the ADMIN can delete any (the reason is emailed to the author)
+export async function deleteRating(id: number, motivo?: string): Promise<void> {
+  await api.delete(`/calificaciones/${id}`, { params: motivo ? { motivo } : undefined });
+}
+
+// GET /calificaciones (ADMIN) - every review, newest first
+export async function getAllRatings(params: PageParams, signal?: AbortSignal): Promise<Page<Rating>> {
+  const { data } = await api.get('/calificaciones', { params, signal });
+  return toPage<Rating>(data);
 }

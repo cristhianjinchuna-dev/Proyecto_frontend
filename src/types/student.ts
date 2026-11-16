@@ -8,6 +8,7 @@ export interface Student {
   fotoPerfil: string | null;
   telefono?: string | null; // only comes back for the student himself (or ADMIN)
   descripcion: string | null; // "Sobre mí"
+  suspendido?: boolean; // moderation (admin panel)
 }
 
 // EP 032 body - EstudianteUpdateRequestDTO (email and password can't change here)

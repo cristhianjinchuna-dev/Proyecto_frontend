@@ -1,5 +1,7 @@
 import { GraduationCap } from 'lucide-react';
 import { getStudents } from '../../api/students';
+import { AccountActions } from './AccountActions';
+import { AccountStatus } from './AccountStatus';
 import { Avatar } from '../ui/Avatar';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
@@ -40,7 +42,8 @@ export function StudentsTable() {
               <th className="px-4 py-3 font-medium">Nombre</th>
               <th className="px-4 py-3 font-medium">Correo</th>
               <th className="px-4 py-3 font-medium">Universidad</th>
-              <th className="px-4 py-3 font-medium">Verificado</th>
+              <th className="px-4 py-3 font-medium">Estado</th>
+              <th className="px-4 py-3 font-medium">Moderación</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -54,7 +57,14 @@ export function StudentsTable() {
                 </td>
                 <td className="px-4 py-3 text-gray-700">{student.correo}</td>
                 <td className="px-4 py-3 text-gray-700">{student.universidadNombre}</td>
-                <td className="px-4 py-3 text-gray-700">{student.verificado ? 'Sí' : 'No'}</td>
+                <td className="px-4 py-3">
+                  <AccountStatus suspended={student.suspendido} />
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex gap-2">
+                    <AccountActions account={student} kind="student" onChanged={reload} />
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
