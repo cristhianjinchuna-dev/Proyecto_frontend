@@ -10,6 +10,8 @@ Frontend web de **MuvU**, la plataforma de alquiler de habitaciones para estudia
 | API (backend) | `https://muvu-api.duckdns.org/api/v1` · repo [Backend_MUVU](https://github.com/cristhianjinchuna-dev/Backend_MUVU) |
 | App móvil | repo [MuvU---Mobile](https://github.com/Eduardo-Vila-coder/MuvU---Mobile) |
 
+> **Disponibilidad del backend:** la API corre en una instancia EC2 de **AWS Academy (Learner Lab)**, que AWS apaga automáticamente al terminar cada sesión del laboratorio (máximo 4 horas). Mientras el laboratorio está encendido, todo el stack funciona por HTTPS. Para revisar el proyecto, coordinar con el equipo para encender el laboratorio; al encenderse, el backend y el HTTPS arrancan solos (servicios `systemd`), sin pasos manuales, y la IP elástica y el dominio no cambian. Comprobación rápida: [`/api/v1/universidades`](https://muvu-api.duckdns.org/api/v1/universidades) debe responder con un JSON.
+
 ## Funcionalidades
 
 | Rol | Qué puede hacer |
@@ -84,10 +86,10 @@ Cada funcionalidad se trabajó en su propia rama y se integró a `main` con pull
 
 ### Participación
 
-| Integrante | GitHub | Aportes en la web |
-|---|---|---|
-| Cristhian Gabriel Jinchuña Cama | `cristhianjinchuna-dev` | Base del proyecto (axios, rutas, estructura), autenticación, habitaciones, reservas, calificaciones, perfiles, panel del arrendador, búsqueda y filtros, modo oscuro, fotos con Cloudinary, contacto, descripciones, moderación y deploy en Vercel |
-| Yerik Dylan Vega Santillan | `Yerik-Vega` | Pagos de publicidad con Stripe, mapas y ubicación de habitaciones con Google Maps |
-| Mathias Alonso Cavalcanti Estacio | `MatCavUTEC` | Pagos de publicidad, panel de administración y eliminación de cuenta del arrendador (EP 034–040) |
-| Eduardo Raúl Vila Castellares | `Eduardo-Vila-coder` | Backend y app móvil (ver sus repositorios) |
-| Mathius Edgar Quispe Sicha | `MQS144` | Backend y app móvil (ver sus repositorios) |
+| Integrante | GitHub | Aportes en la web | Participación |
+|---|---|---|---|
+| Cristhian Gabriel Jinchuña Cama | `cristhianjinchuna-dev` | Base del proyecto (axios, rutas, estructura), autenticación, habitaciones, reservas, calificaciones, perfiles, panel del arrendador, búsqueda y filtros, modo oscuro, fotos con Cloudinary, contacto, descripciones, moderación y deploy en Vercel | 100 % |
+| Yerik Dylan Vega Santillan | `Yerik-Vega` | Pagos de publicidad con Stripe, mapas y ubicación de habitaciones con Google Maps | 100 % |
+| Mathias Alonso Cavalcanti Estacio | `MatCavUTEC` | Pagos de publicidad, panel de administración y eliminación de cuenta del arrendador (EP 034–040) | 100 % |
+| Eduardo Raúl Vila Castellares | `Eduardo-Vila-coder` | Backend y app móvil (ver sus repositorios) | 100 % |
+| Mathius Edgar Quispe Sicha | `MQS144` | Backend y app móvil (ver sus repositorios) | 100 % |
