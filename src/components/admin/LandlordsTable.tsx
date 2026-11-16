@@ -12,6 +12,8 @@ import { useFetch } from '../../hooks/useFetch';
 import { usePagination } from '../../hooks/usePagination';
 import { useToast } from '../../hooks/useToast';
 import type { LandlordAdmin } from '../../types/landlord';
+import { AccountActions } from './AccountActions';
+import { AccountStatus } from './AccountStatus';
 import { DniPhotoDialog } from './DniPhotoDialog';
 
 // EP 036 - the admin verifies landlords (the list comes from GET /arrendadores)
@@ -59,7 +61,7 @@ export function LandlordsTable() {
               <th className="px-4 py-3 font-medium">Correo</th>
               <th className="px-4 py-3 font-medium">Habitaciones</th>
               <th className="px-4 py-3 font-medium">Estado</th>
-              <th className="px-4 py-3 font-medium">Acción</th>
+              <th className="px-4 py-3 font-medium">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
@@ -73,7 +75,8 @@ export function LandlordsTable() {
                 </td>
                 <td className="px-4 py-3 text-gray-700">{landlord.correo}</td>
                 <td className="px-4 py-3 text-gray-700">{landlord.cantidadHabitaciones}</td>
-                <td className="px-4 py-3">
+                <td className="space-y-1 px-4 py-3">
+                  {landlord.suspendido && <AccountStatus suspended />}
                   {landlord.verificado ? (
                     <span className="inline-flex items-center gap-1 font-medium text-green-700">
                       <BadgeCheck className="h-4 w-4" aria-hidden /> Verificado
@@ -85,6 +88,7 @@ export function LandlordsTable() {
                   )}
                 </td>
                 <td className="px-4 py-3">
+                  <div className="flex flex-wrap items-center gap-2">
                   <Button
                     variant={landlord.verificado ? 'secondary' : 'primary'}
                     className="w-auto px-3 py-1.5 text-sm"
@@ -94,6 +98,8 @@ export function LandlordsTable() {
                     <IdCard className="h-4 w-4" aria-hidden />
                     {landlord.verificado ? 'Ver DNI' : 'Revisar DNI'}
                   </Button>
+                  <AccountActions account={landlord} kind="landlord" onChanged={reload} />
+                  </div>
                 </td>
               </tr>
             ))}

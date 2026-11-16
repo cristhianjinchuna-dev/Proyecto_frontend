@@ -10,6 +10,7 @@ export interface Room {
   esDestacada: boolean;
   distanciaKm: number | null; // null in EP 008, filled in EP 012
   area: number | null;
+  oculta?: boolean; // hidden by the ADMIN (only the owner sees it in his panel)
 }
 
 // EP 010 - ImagenResponseDTO
@@ -28,6 +29,8 @@ export interface RoomDetail {
   precio: number;
   area: number | null;
   descripcion: string | null; // optional text from the landlord
+  oculta?: boolean; // hidden by the ADMIN
+  disponible?: boolean; // false = hidden or its landlord is suspended: can't be booked
   imagenes: RoomImage[];
 }
 

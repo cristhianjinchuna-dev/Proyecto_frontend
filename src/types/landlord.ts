@@ -9,6 +9,7 @@ export interface Landlord {
   cantidadHabitaciones: number;
   fotoPerfil: string | null;
   telefono?: string | null; // only comes back for the landlord himself (or ADMIN)
+  suspendido?: boolean; // moderation (admin panel)
 }
 
 // GET /arrendadores (ADMIN only) - ArrendadorAdminDTO: also has the DNI photo to verify the landlord

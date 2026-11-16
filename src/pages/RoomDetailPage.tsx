@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { Images, MapPin, Ruler, SearchX } from 'lucide-react';
+import { EyeOff, Images, MapPin, Ruler, SearchX } from 'lucide-react';
 import { getRoomById } from '../api/rooms';
 import { getUniversities } from '../api/universities';
+import { RoomModerationCard } from '../components/admin/RoomModerationCard';
 import { RoomRatings } from '../components/ratings/RoomRatings';
 import { LocationMap } from '../components/LocationMap';
 import { ReservationForm } from '../components/reservations/ReservationForm';
@@ -64,6 +65,14 @@ export default function RoomDetailPage() {
     <section className="space-y-8 py-8">
       <Breadcrumbs items={[{ label: 'Inicio', to: PATHS.home }, { label: room.direccion }]} />
 
+      {/* Hidden by the admin or landlord suspended: visible by link, but it can't be booked */}
+      {room.disponible === false && (
+        <p className="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+          <EyeOff className="h-4 w-4 shrink-0" aria-hidden />
+          Esta habitación no está disponible: fue retirada de las búsquedas y no se puede reservar.
+        </p>
+      )}
+
       <div className="grid gap-8 lg:grid-cols-[3fr_2fr]">
         <RoomGallery images={room.imagenes} alt={`Habitación en ${room.direccion}`} />
 
@@ -102,6 +111,12 @@ export default function RoomDetailPage() {
             >
               Inicia sesión para reservar
             </Link>
+          ) : user?.role === 'ADMIN' ? (
+            <RoomModerationCard room={room} onChanged={reload} />
+          ) : room.disponible === false ? (
+            <p className="rounded-lg bg-gray-50 px-4 py-3 text-center text-sm text-gray-600">
+              No se puede reservar esta habitación.
+            </p>
           ) : user?.role === 'ESTUDIANTE' ? (
             <ReservationForm roomId={room.id} />
           ) : (

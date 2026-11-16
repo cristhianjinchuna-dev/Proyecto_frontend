@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Building2, GraduationCap, School } from 'lucide-react';
+import { Building2, GraduationCap, MessageSquareWarning, School } from 'lucide-react';
 import { LandlordsTable } from '../../components/admin/LandlordsTable';
+import { RatingsModerationPanel } from '../../components/admin/RatingsModerationPanel';
 import { StudentsTable } from '../../components/admin/StudentsTable';
 import { UniversitiesPanel } from '../../components/admin/UniversitiesPanel';
 
-type Tab = 'landlords' | 'students' | 'universities';
+type Tab = 'landlords' | 'students' | 'ratings' | 'universities';
 
 const TABS: { id: Tab; label: string; Icon: typeof Building2 }[] = [
   { id: 'landlords', label: 'Arrendadores', Icon: Building2 },
   { id: 'students', label: 'Estudiantes', Icon: GraduationCap },
+  { id: 'ratings', label: 'Reseñas', Icon: MessageSquareWarning },
   { id: 'universities', label: 'Universidades', Icon: School },
 ];
 
@@ -20,7 +22,9 @@ export default function AdminPanelPage() {
     <section className="space-y-6 py-8">
       <header>
         <h1 className="text-3xl font-bold text-gray-900">Panel de administrador</h1>
-        <p className="mt-1 text-gray-600">Gestiona arrendadores, estudiantes y universidades.</p>
+        <p className="mt-1 text-gray-600">
+          Verifica arrendadores, modera cuentas, habitaciones y reseñas, y gestiona universidades.
+        </p>
       </header>
 
       <div role="tablist" className="flex flex-wrap gap-2 border-b border-gray-200">
@@ -44,6 +48,7 @@ export default function AdminPanelPage() {
 
       {activeTab === 'landlords' && <LandlordsTable />}
       {activeTab === 'students' && <StudentsTable />}
+      {activeTab === 'ratings' && <RatingsModerationPanel />}
       {activeTab === 'universities' && <UniversitiesPanel />}
     </section>
   );
