@@ -90,4 +90,4 @@ Cada funcionalidad se trabajó en su propia rama y se integró a `main` con pull
 | Yerik Dylan Vega Santillan | `Yerik-Vega` | Pagos de publicidad con Stripe, mapas y ubicación de habitaciones con Google Maps |
 | Mathias Alonso Cavalcanti Estacio | `MatCavUTEC` | Pagos de publicidad, panel de administración y eliminación de cuenta del arrendador (EP 034–040) |
 | Eduardo Raúl Vila Castellares | `Eduardo-Vila-coder` | Backend y app móvil (ver sus repositorios) |
-| Mathius Edgar Quispe Sicha | `MQS144` | Backend (ver su repositorio) |
+| Mathius Edgar Quispe Sicha | `MQS144` | Backend y app móvil (ver sus repositorios) |
