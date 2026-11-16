@@ -3,6 +3,7 @@ import { LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { PATHS } from '../../routes/paths';
 import type { Role } from '../../types/auth';
+import { ThemeToggle } from './ThemeToggle';
 
 const ROLE_LABELS: Record<Role, string> = {
   ESTUDIANTE: 'Estudiante',
@@ -63,6 +64,8 @@ export function Navbar() {
               Panel de administrador
             </NavLink>
           )}
+
+          <ThemeToggle />
 
           {isAuthenticated && user ? (
             <>
