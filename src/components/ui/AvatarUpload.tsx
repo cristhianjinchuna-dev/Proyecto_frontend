@@ -53,7 +53,7 @@ export function AvatarUpload({ name, value, onChange, onUploadingChange }: Avata
             type="button"
             onClick={() => onChange(null)}
             aria-label="Quitar foto de perfil"
-            className="absolute -right-1 -top-1 rounded-full bg-gray-900/70 p-1 text-white hover:bg-gray-900"
+            className="absolute -right-1 -top-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
           >
             <X className="h-3.5 w-3.5" aria-hidden />
           </button>

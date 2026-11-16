@@ -179,10 +179,12 @@ export function LocationMap({ title, rooms, address, coordinates, circleCenter, 
             content.append(image);
           }
           const heading = document.createElement('h3');
-          heading.className = 'font-semibold text-gray-900';
+          heading.className = 'font-semibold';
+          heading.style.color = '#111827'; // the InfoWindow is always white, even in dark mode
           heading.textContent = room.direccion;
           const price = document.createElement('p');
-          price.className = 'text-sm font-medium text-blue-700';
+          price.className = 'text-sm font-medium';
+          price.style.color = '#1d4ed8';
           price.textContent = `${formatPrice(room.precio)} / mes`;
           const viewButton = document.createElement('button');
           viewButton.type = 'button';
