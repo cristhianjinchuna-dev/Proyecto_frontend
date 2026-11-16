@@ -1,6 +1,7 @@
 import { useCallback, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertTriangle, BadgeCheck, Clock, Trash2 } from 'lucide-react';
+import { AlertTriangle, BadgeCheck, Clock, Trash2, X } from 'lucide-react';
+import { isUploadConfigured, uploadImage, validateImageFile } from '../../api/cloudinary';
 import { deleteLandlord, getLandlord, updateLandlord } from '../../api/landlords';
 import { getErrorMessage, getErrorStatus, mapFieldErrors } from '../../api/errors';
 import { AuthCard } from '../../components/auth/AuthCard';
@@ -8,6 +9,7 @@ import { Alert } from '../../components/ui/Alert';
 import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { ErrorState } from '../../components/ui/ErrorState';
+import { ImageDropzone } from '../../components/ui/ImageDropzone';
 import { PageLoader } from '../../components/ui/PageLoader';
 import { TextField } from '../../components/ui/TextField';
 import { useAuth } from '../../hooks/useAuth';
@@ -64,9 +66,33 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
   const [submitting, setSubmitting] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
+  const [uploadingDni, setUploadingDni] = useState(false);
+  const [dniProgress, setDniProgress] = useState(0);
+  const [dniError, setDniError] = useState<string | null>(null);
+
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const closeDialog = useCallback(() => setConfirmDelete(false), []);
+
+  // DNI photo: computer -> Cloudinary -> URL in the form (it is saved with "Guardar cambios")
+  async function handleDniFile([file]: File[]) {
+    setDniError(null);
+    const fileError = validateImageFile(file);
+    if (fileError) {
+      setDniError(fileError);
+      return;
+    }
+
+    setUploadingDni(true);
+    setDniProgress(0);
+    try {
+      setValue('dniPhotoUrl', await uploadImage(file, 'dni', setDniProgress));
+    } catch (err) {
+      setDniError(err instanceof Error ? err.message : 'No se pudo subir la foto');
+    } finally {
+      setUploadingDni(false);
+    }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -133,22 +159,46 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
           error={getError('name')}
         />
 
-        <TextField
-          label="Foto de tu DNI (URL)"
-          name="dniPhotoUrl"
-          type="url"
-          placeholder="https://..."
-          hint="Enlace a una imagen de tu DNI para que el administrador verifique tu cuenta"
-          value={values.dniPhotoUrl}
-          onChange={(e) => setValue('dniPhotoUrl', e.target.value)}
-          error={getError('dniPhotoUrl')}
-        />
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-700">Foto de tu DNI</p>
+          <p className="text-xs text-gray-500">
+            El administrador la revisa para verificar tu cuenta. Si no eliges una nueva, se mantiene la actual.
+          </p>
+
+          {!isUploadConfigured() && <Alert variant="error">Falta configurar Cloudinary para subir fotos.</Alert>}
+          {(dniError || getError('dniPhotoUrl')) && (
+            <p className="text-sm text-red-600">{dniError ?? getError('dniPhotoUrl')}</p>
+          )}
+
+          {values.dniPhotoUrl ? (
+            <div className="relative overflow-hidden rounded-xl ring-1 ring-gray-200">
+              <img src={values.dniPhotoUrl} alt="Foto de tu DNI" className="max-h-56 w-full object-contain" />
+              <button
+                type="button"
+                onClick={() => setValue('dniPhotoUrl', '')}
+                aria-label="Quitar la foto del DNI"
+                className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/80"
+              >
+                <X className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+          ) : uploadingDni ? (
+            <div className="space-y-1 rounded-xl border-2 border-dashed border-gray-300 px-4 py-8 text-center" aria-live="polite">
+              <p className="text-sm text-gray-600">Subiendo foto... {dniProgress}%</p>
+              <div className="mx-auto h-2 max-w-xs overflow-hidden rounded-full bg-gray-200">
+                <div className="h-full bg-blue-600 transition-all" style={{ width: `${dniProgress}%` }} />
+              </div>
+            </div>
+          ) : (
+            <ImageDropzone onFiles={handleDniFile} disabled={!isUploadConfigured()} label="Elige la foto de tu DNI" />
+          )}
+        </div>
 
         <div className="flex gap-3">
           <Button type="button" variant="secondary" onClick={() => navigate(PATHS.landlordDashboard)}>
             Cancelar
           </Button>
-          <Button type="submit" loading={submitting}>
+          <Button type="submit" loading={submitting} disabled={uploadingDni}>
             {submitting ? 'Guardando...' : 'Guardar cambios'}
           </Button>
         </div>
