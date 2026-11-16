@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
-import { CalendarDays, CheckCircle2, MapPin, SearchX, ShieldAlert, XCircle } from 'lucide-react';
+import { CalendarDays, CheckCircle2, MapPin, MessageSquareQuote, SearchX, ShieldAlert, XCircle } from 'lucide-react';
 import { getReservationById } from '../api/reservations';
 import { getRoomById } from '../api/rooms';
 import { ReservationContactCard } from '../components/reservations/ReservationContactCard';
@@ -128,6 +128,16 @@ export default function ReservationDetailPage() {
               </dd>
             </div>
           </dl>
+
+          {reservation.mensaje && (
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="flex items-center gap-1.5 text-sm font-medium text-gray-500">
+                <MessageSquareQuote className="h-4 w-4" aria-hidden />
+                {isLandlord ? 'Mensaje del estudiante' : 'Tu mensaje al arrendador'}
+              </p>
+              <p className="mt-1 whitespace-pre-line text-gray-800">{reservation.mensaje}</p>
+            </div>
+          )}
 
           {isPending && !isLandlord && (
             <Button variant="danger" onClick={() => request(reservation, 'cancel')} className="sm:w-auto">

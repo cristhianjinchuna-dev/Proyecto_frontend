@@ -34,6 +34,15 @@ export function StudentProfileCard({ studentId }: { studentId: number }) {
         </div>
       </div>
 
+      <div className="text-sm">
+        <p className="text-gray-500">Sobre mí</p>
+        {student.descripcion ? (
+          <p className="mt-1 whitespace-pre-line text-gray-800">{student.descripcion}</p>
+        ) : (
+          <p className="mt-1 text-gray-500">El estudiante aún no escribió una descripción.</p>
+        )}
+      </div>
+
       <div className="rounded-xl bg-gray-50 p-3 text-sm">
         <p className="text-gray-500">Calificaciones que ha dado</p>
         {average != null ? (

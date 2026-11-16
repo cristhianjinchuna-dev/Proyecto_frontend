@@ -112,6 +112,15 @@ export default function RoomDetailPage() {
         </aside>
       </div>
 
+      <section className="space-y-2 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900">Sobre la habitación</h2>
+        {room.descripcion ? (
+          <p className="whitespace-pre-line text-gray-700">{room.descripcion}</p>
+        ) : (
+          <p className="text-sm text-gray-500">El arrendador aún no agregó una descripción.</p>
+        )}
+      </section>
+
       <RoomLocationSection room={room} />
       <RoomRatings roomId={room.id} />
     </section>

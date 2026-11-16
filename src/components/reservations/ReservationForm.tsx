@@ -5,22 +5,28 @@ import { createReservation } from '../../api/reservations';
 import { getErrorMessage, getErrorStatus, mapFieldErrors } from '../../api/errors';
 import { Alert } from '../ui/Alert';
 import { Button } from '../ui/Button';
+import { TextAreaField } from '../ui/TextAreaField';
 import { TextField } from '../ui/TextField';
 import { useForm, type FormErrors } from '../../hooks/useForm';
 import { useToast } from '../../hooks/useToast';
 import { PATHS } from '../../routes/paths';
 import { addDays, countNights, todayIso } from '../../utils/dates';
+import { validateOptionalText } from '../../utils/validators';
 
 interface ReservationFormValues {
   startDate: string;
   endDate: string;
+  message: string;
 }
 
-const INITIAL_VALUES: ReservationFormValues = { startDate: '', endDate: '' };
+const MESSAGE_MAX = 500;
+
+const INITIAL_VALUES: ReservationFormValues = { startDate: '', endDate: '', message: '' };
 
 const SERVER_FIELDS: Record<string, keyof ReservationFormValues> = {
   fecha_inicio: 'startDate',
   fecha_fin: 'endDate',
+  mensaje: 'message',
 };
 
 // Same rules as ReservaRequestDTO: start today or later, end after start
@@ -35,6 +41,7 @@ function validateReservation(values: ReservationFormValues): FormErrors<Reservat
   else if (values.startDate && values.endDate <= values.startDate) {
     errors.endDate = 'La salida debe ser posterior al ingreso';
   }
+  errors.message = validateOptionalText(values.message, MESSAGE_MAX);
   return errors;
 }
 
@@ -63,6 +70,7 @@ export function ReservationForm({ roomId }: { roomId: number }) {
         fecha_inicio: values.startDate,
         fecha_fin: values.endDate,
         habitacionId: roomId,
+        mensaje: values.message.trim() || undefined, // optional
       });
       showToast('Solicitud enviada. Te avisaremos por correo cuando el arrendador la confirme.');
       navigate(PATHS.myReservations);
@@ -112,6 +120,17 @@ export function ReservationForm({ roomId }: { roomId: number }) {
           {nights} {nights === 1 ? 'noche' : 'noches'} · el arrendador debe confirmar tu solicitud
         </p>
       )}
+
+      <TextAreaField
+        label="Mensaje para el arrendador (opcional)"
+        name="message"
+        rows={3}
+        maxLength={MESSAGE_MAX}
+        placeholder="Preséntate: qué estudias, cuándo te mudas, alguna pregunta..."
+        value={values.message}
+        onChange={(e) => setValue('message', e.target.value)}
+        error={getError('message')}
+      />
 
       <Button type="submit" loading={submitting}>
         {submitting ? 'Enviando...' : 'Solicitar reserva'}

@@ -11,6 +11,7 @@ import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { PageLoader } from '../../components/ui/PageLoader';
+import { TextAreaField } from '../../components/ui/TextAreaField';
 import { TextField } from '../../components/ui/TextField';
 import { useAuth } from '../../hooks/useAuth';
 import { useCurrentProfile } from '../../hooks/useCurrentProfile';
@@ -20,18 +21,22 @@ import { useToast } from '../../hooks/useToast';
 import { useUniversities } from '../../hooks/useUniversities';
 import { PATHS } from '../../routes/paths';
 import type { Student } from '../../types/student';
-import { normalizePhone, validateName, validatePhone } from '../../utils/validators';
+import { normalizePhone, validateName, validateOptionalText, validatePhone } from '../../utils/validators';
 
 interface ProfileFormValues {
   name: string;
   universityId: number | '';
   phone: string;
+  about: string;
 }
+
+const ABOUT_MAX = 500;
 
 const SERVER_FIELDS: Record<string, keyof ProfileFormValues> = {
   nombre: 'name',
   universidadId: 'universityId',
   telefono: 'phone',
+  descripcion: 'about',
 };
 
 function validateProfile(values: ProfileFormValues): FormErrors<ProfileFormValues> {
@@ -39,6 +44,7 @@ function validateProfile(values: ProfileFormValues): FormErrors<ProfileFormValue
     name: validateName(values.name),
     universityId: values.universityId === '' ? 'Selecciona tu universidad' : undefined,
     phone: validatePhone(values.phone),
+    about: validateOptionalText(values.about, ABOUT_MAX),
   };
 }
 
@@ -71,7 +77,7 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
   const { showToast } = useToast();
 
   const { values, setValue, getError, validateAll, setServerErrors } = useForm<ProfileFormValues>(
-    { name: student.nombre, universityId: initialUniversityId, phone: student.telefono ?? '' },
+    { name: student.nombre, universityId: initialUniversityId, phone: student.telefono ?? '', about: student.descripcion ?? '' },
     validateProfile,
   );
   const [submitting, setSubmitting] = useState(false);
@@ -96,6 +102,7 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
         universidadId: values.universityId,
         fotoPerfil: photo ?? '', // '' = the user removed the photo
         telefono: normalizePhone(values.phone), // '' = no phone
+        descripcion: values.about.trim(), // '' = no "Sobre mí"
       });
       refreshProfile(); // the Navbar shows the new photo and name
       showToast('Perfil actualizado');
@@ -128,7 +135,7 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
   }
 
   return (
-    <AuthCard title="Mi perfil" subtitle="Actualiza tu foto, tu nombre, tu universidad y tu celular">
+    <AuthCard title="Mi perfil" subtitle="Así te ven los arrendadores cuando solicitas una habitación">
       <AvatarUpload name={values.name || student.nombre} value={photo} onChange={setPhoto} onUploadingChange={setUploadingPhoto} />
 
       <div className="space-y-2 rounded-lg bg-gray-50 p-3 text-sm">
@@ -183,6 +190,17 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
           value={values.phone}
           onChange={(e) => setValue('phone', e.target.value)}
           error={getError('phone')}
+        />
+
+        <TextAreaField
+          label="Sobre mí (opcional)"
+          name="about"
+          maxLength={ABOUT_MAX}
+          placeholder="Qué estudias, de dónde eres, tus hábitos (si fumas, horarios, mascotas)..."
+          hint="Lo ven los arrendadores cuando les envías una solicitud"
+          value={values.about}
+          onChange={(e) => setValue('about', e.target.value)}
+          error={getError('about')}
         />
 
         <p className="text-xs text-gray-500">El correo y la contraseña no se pueden cambiar desde aquí.</p>
