@@ -5,6 +5,7 @@ export interface Rating {
   descripcion: string | null;
   autorId: number;
   autorNombre: string;
+  autorFotoPerfil: string | null;
   habitacionId: number;
   reservaId: number;
 }

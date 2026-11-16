@@ -1,10 +1,10 @@
 import { api } from './client';
 import { toPage } from './pagination';
-import type { Page, PageParams } from '../types/page';
-import type { NearbyRoomsParams, Room, RoomDetail, RoomImage, RoomRequest } from '../types/room';
+import type { Page } from '../types/page';
+import type { NearbyRoomsParams, Room, RoomDetail, RoomImage, RoomRequest, RoomSearchParams } from '../types/room';
 
-// EP 008 - GET /habitaciones (public, paginated, featured first)
-export async function getRooms(params: PageParams, signal?: AbortSignal): Promise<Page<Room>> {
+// EP 008 - GET /habitaciones (public, paginated). Optional: q, precioMin, precioMax, orden
+export async function getRooms(params: RoomSearchParams, signal?: AbortSignal): Promise<Page<Room>> {
   const { data } = await api.get('/habitaciones', { params, signal });
   return toPage<Room>(data);
 }

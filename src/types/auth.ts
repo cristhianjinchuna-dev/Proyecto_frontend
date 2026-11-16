@@ -15,12 +15,14 @@ export interface RegisterStudentRequest {
   correo: string;
   contrasena: string;
   universidadId: number;
+  telefono?: string; // optional, 9 digits starting with 9
 }
 
 export interface RegisterLandlordRequest {
   nombre: string;
   correo: string;
   contrasena: string;
+  telefono?: string; // optional, 9 digits starting with 9
 }
 
 // What the frontend keeps about the logged-in user

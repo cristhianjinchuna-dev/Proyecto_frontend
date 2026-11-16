@@ -1,6 +1,6 @@
 import { api } from './client';
 import { toPage } from './pagination';
-import type { Landlord, UpdateLandlordRequest } from '../types/landlord';
+import type { Landlord, LandlordAdmin, UpdateLandlordRequest } from '../types/landlord';
 import type { Page, PageParams } from '../types/page';
 import type { Room } from '../types/room';
 
@@ -26,10 +26,10 @@ export async function getLandlordRooms(
   return toPage<Room>(data);
 }
 
-// NEW - GET /arrendadores (ADMIN only, paginated). Added to the backend so the admin can find landlords.
-export async function getLandlords(params: PageParams, signal?: AbortSignal): Promise<Page<Landlord>> {
+// GET /arrendadores (ADMIN only, paginated). Includes the DNI photo so the admin can verify
+export async function getLandlords(params: PageParams, signal?: AbortSignal): Promise<Page<LandlordAdmin>> {
   const { data } = await api.get('/arrendadores', { params, signal });
-  return toPage<Landlord>(data);
+  return toPage<LandlordAdmin>(data);
 }
 
 // EP 036 - PATCH /arrendadores/{id}/verificar (ADMIN only, no body)

@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { BadgeCheck, Building2, Clock } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { BadgeCheck, Building2, Clock, IdCard } from 'lucide-react';
 import { getErrorMessage } from '../../api/errors';
 import { getLandlords, verifyLandlord } from '../../api/landlords';
+import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
@@ -10,7 +11,8 @@ import { Pagination } from '../ui/Pagination';
 import { useFetch } from '../../hooks/useFetch';
 import { usePagination } from '../../hooks/usePagination';
 import { useToast } from '../../hooks/useToast';
-import type { Landlord } from '../../types/landlord';
+import type { LandlordAdmin } from '../../types/landlord';
+import { DniPhotoDialog } from './DniPhotoDialog';
 
 // EP 036 - the admin verifies landlords (the list comes from GET /arrendadores)
 export function LandlordsTable() {
@@ -21,12 +23,15 @@ export function LandlordsTable() {
   );
   const { showToast } = useToast();
   const [verifyingId, setVerifyingId] = useState<number | null>(null); // landlord being verified
+  const [dniLandlord, setDniLandlord] = useState<LandlordAdmin | null>(null); // DNI dialog open
+  const closeDni = useCallback(() => setDniLandlord(null), []);
 
-  async function handleVerify(landlord: Landlord) {
+  async function handleVerify(landlord: LandlordAdmin) {
     setVerifyingId(landlord.id);
     try {
       await verifyLandlord(landlord.id);
       showToast(`${landlord.nombre} fue verificado. Se le envió un correo.`);
+      setDniLandlord(null);
       reload();
     } catch (err) {
       showToast(getErrorMessage(err), 'error');
@@ -60,7 +65,12 @@ export function LandlordsTable() {
           <tbody className="divide-y divide-gray-100">
             {data.content.map((landlord) => (
               <tr key={landlord.id}>
-                <td className="px-4 py-3 font-medium text-gray-900">{landlord.nombre}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">
+                  <span className="flex items-center gap-2">
+                    <Avatar name={landlord.nombre} src={landlord.fotoPerfil} size="sm" />
+                    {landlord.nombre}
+                  </span>
+                </td>
                 <td className="px-4 py-3 text-gray-700">{landlord.correo}</td>
                 <td className="px-4 py-3 text-gray-700">{landlord.cantidadHabitaciones}</td>
                 <td className="px-4 py-3">
@@ -75,16 +85,15 @@ export function LandlordsTable() {
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  {!landlord.verificado && (
-                    <Button
-                      className="w-auto px-3 py-1.5 text-sm"
-                      loading={verifyingId === landlord.id}
-                      disabled={verifyingId !== null}
-                      onClick={() => handleVerify(landlord)}
-                    >
-                      Verificar
-                    </Button>
-                  )}
+                  <Button
+                    variant={landlord.verificado ? 'secondary' : 'primary'}
+                    className="w-auto px-3 py-1.5 text-sm"
+                    disabled={verifyingId !== null}
+                    onClick={() => setDniLandlord(landlord)}
+                  >
+                    <IdCard className="h-4 w-4" aria-hidden />
+                    {landlord.verificado ? 'Ver DNI' : 'Revisar DNI'}
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -100,6 +109,15 @@ export function LandlordsTable() {
         onPageChange={setPage}
         onSizeChange={setSize}
       />
+
+      {dniLandlord && (
+        <DniPhotoDialog
+          landlord={dniLandlord}
+          verifying={verifyingId === dniLandlord.id}
+          onVerify={() => handleVerify(dniLandlord)}
+          onClose={closeDni}
+        />
+      )}
     </div>
   );
 }

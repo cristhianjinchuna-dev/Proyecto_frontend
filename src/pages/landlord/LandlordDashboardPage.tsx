@@ -7,6 +7,7 @@ import { deleteRoom } from '../../api/rooms';
 import { AdvertiseDialog } from '../../components/landlord/AdvertiseDialog';
 import { LandlordRoomRow } from '../../components/landlord/LandlordRoomRow';
 import { Alert } from '../../components/ui/Alert';
+import { Avatar } from '../../components/ui/Avatar';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -90,9 +91,12 @@ export default function LandlordDashboardPage() {
   return (
     <section className="space-y-8 py-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Hola, {landlord.nombre}</h1>
-          <p className="mt-1 text-gray-600">{landlord.correo}</p>
+        <div className="flex items-center gap-4">
+          <Avatar name={landlord.nombre} src={landlord.fotoPerfil} size="lg" />
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Hola, {landlord.nombre}</h1>
+            <p className="mt-1 text-gray-600">{landlord.correo}</p>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link
