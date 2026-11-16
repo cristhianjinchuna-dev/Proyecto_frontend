@@ -20,22 +20,25 @@ import { useForm, type FormErrors } from '../../hooks/useForm';
 import { useToast } from '../../hooks/useToast';
 import { PATHS } from '../../routes/paths';
 import type { Landlord } from '../../types/landlord';
-import { validateName, validateUrl } from '../../utils/validators';
+import { normalizePhone, validateName, validatePhone, validateUrl } from '../../utils/validators';
 
 interface ProfileFormValues {
   name: string;
   dniPhotoUrl: string;
+  phone: string;
 }
 
 const SERVER_FIELDS: Record<string, keyof ProfileFormValues> = {
   nombre: 'name',
   dniFoto: 'dniPhotoUrl',
+  telefono: 'phone',
 };
 
 function validateProfileForm(values: ProfileFormValues): FormErrors<ProfileFormValues> {
   return {
     name: validateName(values.name),
     dniPhotoUrl: validateUrl(values.dniPhotoUrl, { required: false }),
+    phone: validatePhone(values.phone),
   };
 }
 
@@ -63,7 +66,7 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
   const { refreshProfile } = useCurrentProfile();
   const { showToast } = useToast();
   const { values, setValue, getError, validateAll, setServerErrors } = useForm(
-    { name: landlord.nombre, dniPhotoUrl: '' },
+    { name: landlord.nombre, dniPhotoUrl: '', phone: landlord.telefono ?? '' },
     validateProfileForm,
   );
   const [submitting, setSubmitting] = useState(false);
@@ -110,6 +113,7 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
         nombre: values.name.trim(),
         dniFoto: values.dniPhotoUrl.trim() || null, // null = keep the current DNI
         fotoPerfil: photo ?? '', // '' = the user removed the photo
+        telefono: normalizePhone(values.phone), // '' = no phone
       });
       refreshProfile(); // the Navbar shows the new photo and name
       showToast('Perfil actualizado');
@@ -166,6 +170,20 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
           value={values.name}
           onChange={(e) => setValue('name', e.target.value)}
           error={getError('name')}
+        />
+
+        <TextField
+          label="Celular (opcional)"
+          name="phone"
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel-national"
+          placeholder="987 654 321"
+          maxLength={15}
+          hint="Solo se comparte con la otra parte cuando se confirma una reserva"
+          value={values.phone}
+          onChange={(e) => setValue('phone', e.target.value)}
+          error={getError('phone')}
         />
 
         <div className="space-y-2">

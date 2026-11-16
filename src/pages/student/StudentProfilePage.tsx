@@ -20,22 +20,25 @@ import { useToast } from '../../hooks/useToast';
 import { useUniversities } from '../../hooks/useUniversities';
 import { PATHS } from '../../routes/paths';
 import type { Student } from '../../types/student';
-import { validateName } from '../../utils/validators';
+import { normalizePhone, validateName, validatePhone } from '../../utils/validators';
 
 interface ProfileFormValues {
   name: string;
   universityId: number | '';
+  phone: string;
 }
 
 const SERVER_FIELDS: Record<string, keyof ProfileFormValues> = {
   nombre: 'name',
   universidadId: 'universityId',
+  telefono: 'phone',
 };
 
 function validateProfile(values: ProfileFormValues): FormErrors<ProfileFormValues> {
   return {
     name: validateName(values.name),
     universityId: values.universityId === '' ? 'Selecciona tu universidad' : undefined,
+    phone: validatePhone(values.phone),
   };
 }
 
@@ -68,7 +71,7 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
   const { showToast } = useToast();
 
   const { values, setValue, getError, validateAll, setServerErrors } = useForm<ProfileFormValues>(
-    { name: student.nombre, universityId: initialUniversityId },
+    { name: student.nombre, universityId: initialUniversityId, phone: student.telefono ?? '' },
     validateProfile,
   );
   const [submitting, setSubmitting] = useState(false);
@@ -92,6 +95,7 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
         nombre: values.name.trim(),
         universidadId: values.universityId,
         fotoPerfil: photo ?? '', // '' = the user removed the photo
+        telefono: normalizePhone(values.phone), // '' = no phone
       });
       refreshProfile(); // the Navbar shows the new photo and name
       showToast('Perfil actualizado');
@@ -124,7 +128,7 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
   }
 
   return (
-    <AuthCard title="Mi perfil" subtitle="Actualiza tu foto, tu nombre y tu universidad">
+    <AuthCard title="Mi perfil" subtitle="Actualiza tu foto, tu nombre, tu universidad y tu celular">
       <AvatarUpload name={values.name || student.nombre} value={photo} onChange={setPhoto} onUploadingChange={setUploadingPhoto} />
 
       <div className="space-y-2 rounded-lg bg-gray-50 p-3 text-sm">
@@ -166,6 +170,20 @@ function ProfileForm({ student, initialUniversityId }: { student: Student; initi
           />
           {getError('universityId') && <p className="text-sm text-red-600">{getError('universityId')}</p>}
         </div>
+
+        <TextField
+          label="Celular (opcional)"
+          name="phone"
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel-national"
+          placeholder="987 654 321"
+          maxLength={15}
+          hint="Solo se comparte con la otra parte cuando se confirma una reserva"
+          value={values.phone}
+          onChange={(e) => setValue('phone', e.target.value)}
+          error={getError('phone')}
+        />
 
         <p className="text-xs text-gray-500">El correo y la contraseña no se pueden cambiar desde aquí.</p>
 

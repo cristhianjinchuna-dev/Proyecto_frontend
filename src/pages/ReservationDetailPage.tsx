@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { CalendarDays, CheckCircle2, MapPin, SearchX, ShieldAlert, XCircle } from 'lucide-react';
 import { getReservationById } from '../api/reservations';
 import { getRoomById } from '../api/rooms';
+import { ReservationContactCard } from '../components/reservations/ReservationContactCard';
 import { ReservationStatusBadge } from '../components/reservations/ReservationStatusBadge';
 import { StudentProfileCard } from '../components/reservations/StudentProfileCard';
 import { Breadcrumbs } from '../components/ui/Breadcrumbs';
@@ -141,14 +142,25 @@ export default function ReservationDetailPage() {
           {!isPending && (
             <p className="text-sm text-gray-500">
               {reservation.estado === 'CONFIRMADO'
-                ? 'Esta reserva ya está confirmada.'
+                ? 'Esta reserva ya está confirmada. Usa los datos de contacto para coordinar tu mudanza.'
                 : 'Esta reserva fue cancelada.'}
             </p>
           )}
         </article>
 
-        {/* EP 025 - only the landlord can see the student profile */}
-        {isLandlord && <StudentProfileCard studentId={reservation.estudianteId} />}
+        <div className="space-y-6">
+          {/* Confirmed: each party sees the other's contact data (comes from the backend only when CONFIRMADO) */}
+          {reservation.estado === 'CONFIRMADO' && reservation.contacto && (
+            <ReservationContactCard
+              contact={reservation.contacto}
+              contactRole={isLandlord ? 'estudiante' : 'arrendador'}
+              reservationId={reservation.id}
+              roomAddress={room.data?.direccion}
+            />
+          )}
+          {/* EP 025 - only the landlord can see the student profile */}
+          {isLandlord && <StudentProfileCard studentId={reservation.estudianteId} />}
+        </div>
       </div>
 
       <ConfirmDialog {...dialogProps} />

@@ -8,6 +8,7 @@ export interface Landlord {
   totalCalificaciones: number;
   cantidadHabitaciones: number;
   fotoPerfil: string | null;
+  telefono?: string | null; // only comes back for the landlord himself (or ADMIN)
 }
 
 // GET /arrendadores (ADMIN only) - ArrendadorAdminDTO: also has the DNI photo to verify the landlord
@@ -20,4 +21,5 @@ export interface UpdateLandlordRequest {
   nombre: string;
   dniFoto: string | null;
   fotoPerfil?: string | null;
+  telefono?: string; // '' = remove it; omitted = keep the current one
 }

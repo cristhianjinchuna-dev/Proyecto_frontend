@@ -35,6 +35,20 @@ export function validatePassword(password: string): string | undefined {
   return undefined;
 }
 
+// Optional Peruvian mobile: 9 digits starting with 9 (same rule as the backend)
+export function validatePhone(phone: string): string | undefined {
+  const value = normalizePhone(phone);
+  if (!value) return undefined;
+  if (!/^9\d{8}$/.test(value)) return 'Debe tener 9 dígitos y empezar con 9';
+  return undefined;
+}
+
+// "987 654 321" / "+51 987-654-321" -> "987654321"
+export function normalizePhone(phone: string): string {
+  const digits = phone.replace(/\D/g, '');
+  return digits.length === 11 && digits.startsWith('51') ? digits.slice(2) : digits;
+}
+
 // Required text with a max length (e.g. room address: 255)
 export function validateRequiredText(
   text: string,

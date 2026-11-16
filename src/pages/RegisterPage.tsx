@@ -12,7 +12,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useForm, type FormErrors } from '../hooks/useForm';
 import { PATHS } from '../routes/paths';
 import type { AuthResponse, RegisterRole } from '../types/auth';
-import { validateEmail, validateName, validatePassword } from '../utils/validators';
+import { normalizePhone, validateEmail, validateName, validatePassword, validatePhone } from '../utils/validators';
 
 interface RegisterFormValues {
   role: RegisterRole;
@@ -20,6 +20,7 @@ interface RegisterFormValues {
   email: string;
   password: string;
   universityId: number | '';
+  phone: string;
 }
 
 const INITIAL_VALUES: RegisterFormValues = {
@@ -28,6 +29,7 @@ const INITIAL_VALUES: RegisterFormValues = {
   email: '',
   password: '',
   universityId: '',
+  phone: '',
 };
 
 // Backend field name -> form field name (for 400 "errores")
@@ -36,6 +38,7 @@ const SERVER_FIELDS: Record<string, keyof RegisterFormValues> = {
   correo: 'email',
   contrasena: 'password',
   universidadId: 'universityId',
+  telefono: 'phone',
 };
 
 function validateRegisterForm(values: RegisterFormValues): FormErrors<RegisterFormValues> {
@@ -45,6 +48,7 @@ function validateRegisterForm(values: RegisterFormValues): FormErrors<RegisterFo
     email: validateEmail(values.email, { requireEduPe: isStudent }),
     password: validatePassword(values.password),
     universityId: isStudent && values.universityId === '' ? 'Selecciona tu universidad' : undefined,
+    phone: validatePhone(values.phone),
   };
 }
 
@@ -66,6 +70,7 @@ export default function RegisterPage() {
       nombre: values.name.trim(),
       correo: values.email.trim().toLowerCase(),
       contrasena: values.password,
+      telefono: normalizePhone(values.phone) || undefined, // optional
     };
     return isStudent
       ? registerStudent({ ...body, universidadId: Number(values.universityId) })
@@ -178,6 +183,20 @@ export default function RegisterPage() {
             )}
           </div>
         )}
+
+        <TextField
+          label="Celular (opcional)"
+          name="phone"
+          type="tel"
+          inputMode="numeric"
+          autoComplete="tel-national"
+          placeholder="987 654 321"
+          maxLength={15}
+          hint="Solo se comparte con la otra parte cuando se confirma una reserva"
+          value={values.phone}
+          onChange={(e) => setValue('phone', e.target.value)}
+          error={getError('phone')}
+        />
 
         <Button type="submit" loading={submitting}>
           {submitting ? 'Creando cuenta...' : 'Crear cuenta'}
