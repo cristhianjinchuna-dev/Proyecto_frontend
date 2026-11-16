@@ -30,6 +30,17 @@ export interface RoomDetail {
   imagenes: RoomImage[];
 }
 
+// EP 008 - sort options accepted by GET /habitaciones?orden=
+export type RoomSort = 'recomendadas' | 'precio_asc' | 'precio_desc' | 'area_desc';
+
+// EP 008 - query params (search, price range and sort are optional)
+export interface RoomSearchParams extends PageParams {
+  q?: string;
+  precioMin?: number;
+  precioMax?: number;
+  orden?: RoomSort;
+}
+
 // EP 012 - query params
 export interface NearbyRoomsParams extends PageParams {
   universidadId: number;

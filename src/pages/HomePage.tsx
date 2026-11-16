@@ -1,17 +1,21 @@
-import { Home } from 'lucide-react';
+import { Home, SearchX } from 'lucide-react';
 import { getRooms } from '../api/rooms';
+import { RoomFilters } from '../components/rooms/RoomFilters';
 import { RoomGrid } from '../components/rooms/RoomGrid';
 import { EmptyState } from '../components/ui/EmptyState';
 import { ErrorState } from '../components/ui/ErrorState';
 import { Pagination } from '../components/ui/Pagination';
 import { useFetch } from '../hooks/useFetch';
 import { usePagination } from '../hooks/usePagination';
+import { useRoomFilters } from '../hooks/useRoomFilters';
 
 export default function HomePage() {
   const { page, size, setPage, setSize } = usePagination();
+  const { filters, apiParams, hasFilters, updateFilters, clearFilters } = useRoomFilters();
+
   const { data, loading, error, reload } = useFetch(
-    (signal) => getRooms({ page, size }, signal),
-    [page, size],
+    (signal) => getRooms({ page, size, ...apiParams }, signal),
+    [page, size, apiParams],
   );
 
   function handlePageChange(newPage: number) {
@@ -25,6 +29,26 @@ export default function HomePage() {
 
     if (!data || data.content.length === 0) {
       const pageOutOfRange = (data?.page.totalElements ?? 0) > 0;
+
+      if (hasFilters && !pageOutOfRange) {
+        return (
+          <EmptyState
+            icon={<SearchX className="h-10 w-10" aria-hidden />}
+            title="No encontramos habitaciones con esos filtros"
+            description="Prueba con otra dirección o amplía el rango de precios."
+            action={
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              >
+                Limpiar filtros
+              </button>
+            }
+          />
+        );
+      }
+
       return (
         <EmptyState
           icon={<Home className="h-10 w-10" aria-hidden />}
@@ -51,6 +75,11 @@ export default function HomePage() {
 
     return (
       <>
+        {hasFilters && (
+          <p className="text-sm text-gray-600" aria-live="polite">
+            {data.page.totalElements} {data.page.totalElements === 1 ? 'habitación encontrada' : 'habitaciones encontradas'}
+          </p>
+        )}
         <RoomGrid rooms={data.content} />
         <Pagination
           page={data.page.number}
@@ -65,13 +94,15 @@ export default function HomePage() {
   }
 
   return (
-    <section className="space-y-8 py-8">
+    <section className="space-y-6 py-8">
       <header className="rounded-2xl bg-linear-to-r from-blue-600 to-violet-600 px-6 py-10 text-white shadow-lg sm:px-10">
         <h1 className="text-3xl font-bold sm:text-4xl">Encuentra tu habitación ideal</h1>
         <p className="mt-2 max-w-xl text-blue-100">
           Habitaciones cerca de tu universidad. Las destacadas aparecen primero.
         </p>
       </header>
+
+      <RoomFilters filters={filters} hasFilters={hasFilters} onChange={updateFilters} onClear={clearFilters} />
 
       {renderContent()}
     </section>
