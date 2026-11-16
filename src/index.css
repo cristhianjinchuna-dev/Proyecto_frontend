@@ -24,12 +24,14 @@
 
 /* Low specificity (:where) so hover:/focus: classes still win */
 @layer utilities {
-  /* Cards and panels: dark surface instead of white */
+  /* Cards and panels: dark surface instead of white.
+     It sits BETWEEN the page (gray-50) and gray-100, so gray-100 boxes, tracks and hovers
+     inside a card are still visible (with the same value as gray-100 they disappeared) */
     :where(.dark) .bg-white {
-        background-color: oklch(21% 0.034 264.665);
+        background-color: oklch(17.5% 0.031 263);
     }
     :where(.dark) .bg-white\/90 {
-        background-color: oklch(21% 0.034 264.665 / 0.9);
+        background-color: oklch(17.5% 0.031 263 / 0.9);
   }
 
     /* Light tints (badges, alerts) become translucent on dark */

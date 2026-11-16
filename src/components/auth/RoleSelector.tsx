@@ -22,8 +22,8 @@ export function RoleSelector({ value, onChange }: RoleSelectorProps) {
             role="radio"
             aria-checked={selected}
             onClick={() => onChange(option.value)}
-            className={`rounded-md px-3 py-2 text-sm font-medium transition ${
-              selected ? 'bg-white text-blue-700 shadow' : 'text-gray-600 hover:text-gray-900'
+            className={`rounded-md px-3 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              selected ? 'bg-white text-blue-700 shadow ring-1 ring-gray-200' : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             {option.label}
