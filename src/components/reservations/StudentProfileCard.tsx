@@ -1,6 +1,7 @@
-import { BadgeCheck, GraduationCap, UserRound } from 'lucide-react';
+import { BadgeCheck, GraduationCap } from 'lucide-react';
 import { getStudentProfile } from '../../api/students';
 import { RatingStars } from '../ratings/RatingStars';
+import { Avatar } from '../ui/Avatar';
 import { ErrorState } from '../ui/ErrorState';
 import { useFetch } from '../../hooks/useFetch';
 
@@ -21,9 +22,7 @@ export function StudentProfileCard({ studentId }: { studentId: number }) {
       <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Estudiante</h2>
 
       <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-          <UserRound className="h-6 w-6" aria-hidden />
-        </span>
+        <Avatar name={student.nombre} src={student.fotoPerfil} size="lg" />
         <div>
           <p className="flex items-center gap-1.5 font-semibold text-gray-900">
             {student.nombre}

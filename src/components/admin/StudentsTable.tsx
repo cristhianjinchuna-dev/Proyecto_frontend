@@ -1,5 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 import { getStudents } from '../../api/students';
+import { Avatar } from '../ui/Avatar';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
 import { PageLoader } from '../ui/PageLoader';
@@ -45,7 +46,12 @@ export function StudentsTable() {
           <tbody className="divide-y divide-gray-100">
             {data.content.map((student) => (
               <tr key={student.id}>
-                <td className="px-4 py-3 font-medium text-gray-900">{student.nombre}</td>
+                <td className="px-4 py-3 font-medium text-gray-900">
+                  <span className="flex items-center gap-2">
+                    <Avatar name={student.nombre} src={student.fotoPerfil} size="sm" />
+                    {student.nombre}
+                  </span>
+                </td>
                 <td className="px-4 py-3 text-gray-700">{student.correo}</td>
                 <td className="px-4 py-3 text-gray-700">{student.universidadNombre}</td>
                 <td className="px-4 py-3 text-gray-700">{student.verificado ? 'Sí' : 'No'}</td>

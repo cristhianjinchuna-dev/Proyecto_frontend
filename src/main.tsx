@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import { AuthProvider } from './context/AuthContext';
+import { CurrentProfileProvider } from './context/CurrentProfileContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import './index.css';
@@ -12,9 +13,11 @@ createRoot(document.getElementById('root')!).render(
     <ThemeProvider>
       <BrowserRouter>
         <AuthProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
+          <CurrentProfileProvider>
+            <ToastProvider>
+              <App />
+            </ToastProvider>
+          </CurrentProfileProvider>
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>

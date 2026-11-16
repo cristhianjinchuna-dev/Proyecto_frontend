@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, MapPin, UserRound } from 'lucide-react';
+import { CalendarDays, MapPin } from 'lucide-react';
 import { getStudentProfile } from '../../api/students';
 import { useFetch } from '../../hooks/useFetch';
 import { RoomAddressLink } from '../rooms/RoomAddressLink';
+import { Avatar } from '../ui/Avatar';
 import { buildReservationPath } from '../../routes/paths';
 import type { Reservation } from '../../types/reservation';
 import { countNights, formatDate } from '../../utils/dates';
@@ -18,7 +19,13 @@ interface ReservationCardProps {
 function StudentName({ studentId }: { studentId: number }) {
   const { data: student, loading } = useFetch((signal) => getStudentProfile(studentId, signal), [studentId]);
   if (loading) return <span className="inline-block h-4 w-32 animate-pulse rounded bg-gray-200" />;
-  return <span>{student ? `${student.nombre} · ${student.universidadNombre}` : `Estudiante #${studentId}`}</span>;
+  if (!student) return <span>{`Estudiante #${studentId}`}</span>;
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <Avatar name={student.nombre} src={student.fotoPerfil} size="xs" />
+      {student.nombre} · {student.universidadNombre}
+    </span>
+  );
 }
 
 export function ReservationCard({ reservation, showStudent = false, actions }: ReservationCardProps) {
@@ -50,7 +57,6 @@ export function ReservationCard({ reservation, showStudent = false, actions }: R
 
         {showStudent && (
           <p className="flex items-center gap-1.5 text-sm text-gray-600">
-            <UserRound className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
             <StudentName studentId={reservation.estudianteId} />
           </p>
         )}

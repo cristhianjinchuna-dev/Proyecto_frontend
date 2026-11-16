@@ -6,6 +6,7 @@ import { deleteLandlord, getLandlord, updateLandlord } from '../../api/landlords
 import { getErrorMessage, getErrorStatus, mapFieldErrors } from '../../api/errors';
 import { AuthCard } from '../../components/auth/AuthCard';
 import { Alert } from '../../components/ui/Alert';
+import { AvatarUpload } from '../../components/ui/AvatarUpload';
 import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -13,6 +14,7 @@ import { ImageDropzone } from '../../components/ui/ImageDropzone';
 import { PageLoader } from '../../components/ui/PageLoader';
 import { TextField } from '../../components/ui/TextField';
 import { useAuth } from '../../hooks/useAuth';
+import { useCurrentProfile } from '../../hooks/useCurrentProfile';
 import { useFetch } from '../../hooks/useFetch';
 import { useForm, type FormErrors } from '../../hooks/useForm';
 import { useToast } from '../../hooks/useToast';
@@ -58,6 +60,7 @@ export default function LandlordProfilePage() {
 function ProfileForm({ landlord }: { landlord: Landlord }) {
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const { refreshProfile } = useCurrentProfile();
   const { showToast } = useToast();
   const { values, setValue, getError, validateAll, setServerErrors } = useForm(
     { name: landlord.nombre, dniPhotoUrl: '' },
@@ -66,6 +69,8 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
   const [submitting, setSubmitting] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
+  const [photo, setPhoto] = useState<string | null>(landlord.fotoPerfil);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingDni, setUploadingDni] = useState(false);
   const [dniProgress, setDniProgress] = useState(0);
   const [dniError, setDniError] = useState<string | null>(null);
@@ -103,8 +108,10 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
     try {
       await updateLandlord(landlord.id, {
         nombre: values.name.trim(),
-        dniFoto: values.dniPhotoUrl.trim() || null,
+        dniFoto: values.dniPhotoUrl.trim() || null, // null = keep the current DNI
+        fotoPerfil: photo ?? '', // '' = the user removed the photo
       });
+      refreshProfile(); // the Navbar shows the new photo and name
       showToast('Perfil actualizado');
       navigate(PATHS.landlordDashboard);
     } catch (err) {
@@ -146,6 +153,8 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
           <Clock className="h-5 w-5" aria-hidden /> Pendiente de verificación
         </p>
       )}
+
+      <AvatarUpload name={values.name || landlord.nombre} value={photo} onChange={setPhoto} onUploadingChange={setUploadingPhoto} />
 
       {generalError && <Alert variant="error">{generalError}</Alert>}
 
@@ -198,7 +207,7 @@ function ProfileForm({ landlord }: { landlord: Landlord }) {
           <Button type="button" variant="secondary" onClick={() => navigate(PATHS.landlordDashboard)}>
             Cancelar
           </Button>
-          <Button type="submit" loading={submitting} disabled={uploadingDni}>
+          <Button type="submit" loading={submitting} disabled={uploadingDni || uploadingPhoto}>
             {submitting ? 'Guardando...' : 'Guardar cambios'}
           </Button>
         </div>

@@ -8,7 +8,7 @@ const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string | 
 export const MAX_IMAGE_MB = 5;
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-export type UploadFolder = 'rooms' | 'dni';
+export type UploadFolder = 'rooms' | 'dni' | 'avatars';
 
 export function isUploadConfigured(): boolean {
   return Boolean(CLOUD_NAME && UPLOAD_PRESET);

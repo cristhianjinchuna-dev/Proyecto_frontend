@@ -1,8 +1,10 @@
 import { Link, NavLink } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useCurrentProfile } from '../../hooks/useCurrentProfile';
 import { PATHS } from '../../routes/paths';
 import type { Role } from '../../types/auth';
+import { Avatar } from '../ui/Avatar';
 import { ThemeToggle } from './ThemeToggle';
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -18,6 +20,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 export function Navbar() {
   const { isAuthenticated, user, signOut } = useAuth();
+  const { profile } = useCurrentProfile();
 
   return (
     <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur">
@@ -69,7 +72,10 @@ export function Navbar() {
 
           {isAuthenticated && user ? (
             <>
-              <span className="hidden px-2 text-sm text-gray-500 sm:inline">{ROLE_LABELS[user.role]}</span>
+              <span className="flex items-center gap-2 px-2" title={profile?.name}>
+                <Avatar name={profile?.name ?? ROLE_LABELS[user.role]} src={profile?.photo} size="sm" />
+                <span className="hidden text-sm text-gray-500 sm:inline">{ROLE_LABELS[user.role]}</span>
+              </span>
               <button
                 type="button"
                 onClick={signOut}
