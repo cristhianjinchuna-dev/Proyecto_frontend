@@ -8,6 +8,7 @@ export interface Reservation {
   fecha_fin: string; // yyyy-MM-dd
   habitacionId: number;
   estudianteId: number;
+  mensaje: string | null; // optional message the student wrote when requesting
   // The other party (landlord for the student, student for the landlord). Only when CONFIRMADO
   contacto?: ReservationContact | null;
 }
@@ -26,4 +27,5 @@ export interface CreateReservationRequest {
   fecha_inicio: string;
   fecha_fin: string;
   habitacionId: number;
+  mensaje?: string; // optional, max 500
 }

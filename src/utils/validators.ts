@@ -49,6 +49,11 @@ export function normalizePhone(phone: string): string {
   return digits.length === 11 && digits.startsWith('51') ? digits.slice(2) : digits;
 }
 
+// Optional free text (descriptions, messages)
+export function validateOptionalText(text: string, maxLength: number): string | undefined {
+  return text.trim().length > maxLength ? `Máximo ${maxLength} caracteres` : undefined;
+}
+
 // Required text with a max length (e.g. room address: 255)
 export function validateRequiredText(
   text: string,

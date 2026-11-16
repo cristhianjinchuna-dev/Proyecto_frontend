@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Mail, MapPin, MessageCircle } from 'lucide-react';
+import { CalendarDays, Mail, MapPin, MessageCircle, MessageSquareQuote } from 'lucide-react';
 import { getStudentProfile } from '../../api/students';
 import { useFetch } from '../../hooks/useFetch';
 import { RoomAddressLink } from '../rooms/RoomAddressLink';
@@ -88,6 +88,14 @@ export function ReservationCard({ reservation, showStudent = false, actions }: R
         {showStudent && (
           <p className="flex items-center gap-1.5 text-sm text-gray-600">
             <StudentName studentId={reservation.estudianteId} />
+          </p>
+        )}
+
+        {/* Landlord view: what the student wrote when requesting */}
+        {showStudent && reservation.mensaje && (
+          <p className="flex items-start gap-1.5 text-sm text-gray-600">
+            <MessageSquareQuote className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+            <span className="line-clamp-2 italic">“{reservation.mensaje}”</span>
           </p>
         )}
 

@@ -7,6 +7,7 @@ export interface Student {
   universidadNombre: string;
   fotoPerfil: string | null;
   telefono?: string | null; // only comes back for the student himself (or ADMIN)
+  descripcion: string | null; // "Sobre mí"
 }
 
 // EP 032 body - EstudianteUpdateRequestDTO (email and password can't change here)
@@ -15,6 +16,7 @@ export interface UpdateStudentRequest {
   universidadId: number;
   fotoPerfil?: string | null; // new profile photo URL; null/omitted = keep the current one
   telefono?: string; // '' = remove it; omitted = keep the current one
+  descripcion?: string; // "Sobre mí": '' = remove it; omitted = keep the current one
 }
 
 // EP 025 - EstudiantePerfilDTO (what a landlord sees before confirming)
@@ -27,4 +29,5 @@ export interface StudentProfile {
   puntuacionPromedio: number | null; // average of the ratings the student HAS GIVEN
   totalCalificaciones: number;
   fotoPerfil: string | null;
+  descripcion: string | null; // "Sobre mí"
 }

@@ -27,6 +27,7 @@ export interface RoomDetail {
   longitud: number;
   precio: number;
   area: number | null;
+  descripcion: string | null; // optional text from the landlord
   imagenes: RoomImage[];
 }
 
@@ -54,6 +55,7 @@ export interface RoomRequest {
   area: number;
   latitud?: number;
   longitud?: number;
+  descripcion?: string; // '' = no description
 }
 
 // EP 017 - body (ImagenRequestDTO)
